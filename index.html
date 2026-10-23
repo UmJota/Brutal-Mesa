@@ -7,11 +7,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: app de mesa mobile-first — cabeçalho fixo, conteúdo em cartões empilhados, barra de abas no rodapé. Visual de pôster slasher: preto-sangue, osso, vermelho. */
+/* Layout: app de mesa mobile-first. Faixa de cena colorida no topo, cartão de status, botões grandes da ação do momento, sub-abas para o resto, barra de abas fixa no rodapé. Visual de pôster slasher. */
 :root{
-  --bg:#0f0b0c; --panel:#1b1416; --panel2:#251b1e; --line:#3a2a2e;
-  --bone:#efe5d8; --muted:#a8968f; --blood:#d4142f; --blood-d:#7d0b1c;
-  --ok:#6fbf73; --warn:#e3a33b; --killer:#9b6bd6; --fuga:#3fb3c9;
+  --bg:#0e0a0b; --panel:#1a1315; --panel2:#241a1d; --line:#35262a; --line2:#4a353a;
+  --bone:#f1e7da; --muted:#a39189; --dim:#6f5f59;
+  --blood:#d6152f; --blood-d:#6e0a18; --blood-bg:#2b0b11;
+  --amber:#e9a53a; --amber-bg:#2b1f0b; --slate:#8fa3b0; --slate-bg:#141a1e;
+  --ok:#5fbf74; --killer:#a77be0; --killer-bg:#21152f; --fuga:#3fb7cc; --fuga-bg:#0c2329; --pt:#f2c14e;
   --display:"Anton","Impact","Arial Narrow",sans-serif;
   --body:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
@@ -19,101 +21,152 @@
 }
 *{box-sizing:border-box}
 html,body{background:var(--bg);color:var(--bone)}
-body{font-family:var(--body);font-size:15px;line-height:1.4;-webkit-tap-highlight-color:transparent;padding-bottom:84px}
+body{font-family:var(--body);font-size:16px;line-height:1.4;-webkit-tap-highlight-color:transparent;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
-button{font:inherit;color:inherit;cursor:pointer}
-input,textarea,select{font:inherit;color:var(--bone);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
-textarea{min-height:90px;resize:vertical}
-input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--blood);outline-offset:1px}
-.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;display:flex;flex-direction:column;gap:14px}
-h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-transform:uppercase;margin:0;text-wrap:balance;line-height:1.05}
-h1{font-size:42px}h2{font-size:24px}h3{font-size:18px}
-.lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
-.muted{color:var(--muted)} .small{font-size:13px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+input,textarea,select{font:inherit;color:var(--bone);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;width:100%}
+textarea{min-height:110px;resize:vertical}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--blood);outline-offset:2px}
+svg.i{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:620px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 20px;display:flex;flex-direction:column;gap:12px}
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-transform:uppercase;margin:0;text-wrap:balance;line-height:1}
+h1{font-size:64px;color:var(--blood)} h2{font-size:28px} h3{font-size:19px;letter-spacing:.04em}
+p{margin:0}
+.lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)} .small{font-size:14px} .tiny{font-size:12px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .between{justify-content:space-between}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.btn{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:11px 14px;font-weight:600;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.btn{border:1px solid var(--line2);background:var(--panel2);border-radius:12px;padding:12px 16px;font-weight:700;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center}
 .btn.primary{background:var(--blood);border-color:var(--blood);color:#fff}
-.btn.killer{background:#3a2550;border-color:var(--killer)}
-.btn.ghost{background:transparent}
-.btn.sm{min-height:34px;padding:6px 10px;font-size:13px}
-.btn[disabled]{opacity:.4;cursor:not-allowed}
+.btn.killer{background:var(--killer-bg);border-color:var(--killer);color:#e6d8fa}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.sm{min-height:38px;padding:7px 12px;font-size:14px;border-radius:10px}
+.btn.xl{min-height:64px;font-size:20px;font-family:var(--display);letter-spacing:.06em;text-transform:uppercase;font-weight:400}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
 .btn.block{width:100%}
-.chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;background:var(--panel2)}
-.chip.on{background:var(--blood);border-color:var(--blood);color:#fff}
-.chip.k{border-color:var(--killer);color:#d7c3f3}
-.chip.f{border-color:var(--fuga);color:#bfeaf2}
-.chip.w{border-color:var(--warn);color:#f6d79c}
-.chip.dead{background:#000;border-color:#555;color:#bbb}
-.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
-.seg button{border:0;background:transparent;border-radius:8px;padding:9px 4px;font-weight:600;font-size:14px}
-.seg button.on{background:var(--blood);color:#fff}
-/* header */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:linear-gradient(var(--bg) 70%,transparent);}
-.top .wrap{padding-block:10px 6px;gap:6px}
-.brand{font-family:var(--display);font-size:26px;letter-spacing:.04em;color:var(--blood);line-height:1}
-.pools{display:flex;gap:6px;flex-wrap:wrap}
-/* tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;background:#140e10;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-.tabs nav{max-width:640px;margin:0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
-.tabs button{border:0;background:transparent;padding:10px 2px 12px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px}
-.tabs button.on{color:var(--bone)}
-.tabs button.on .ic{background:var(--blood)}
-.ic{width:26px;height:5px;border-radius:3px;background:var(--line)}
-/* dice */
-.pile{display:flex;gap:6px;flex-wrap:wrap}
-.slot{width:34px;height:34px;border-radius:8px;border:2px dashed var(--line)}
-.slot.full{border:2px solid var(--bone);background:var(--bone)}
-.slot.fu{border:2px solid var(--fuga);background:var(--fuga)}
-.slot.fu.empty{background:transparent;border-style:dashed}
-.die{width:46px;height:46px;border-radius:10px;background:var(--bone);display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:7px;gap:1px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
-.die i{border-radius:50%;width:8px;height:8px;place-self:center;background:transparent}
-.die i.p{background:#1a1012}
-.die.fail{background:#4a3a3d;opacity:.75}.die.fail i.p{background:#cbb}
-.die.six{background:var(--blood)} .die.six i.p{background:#fff}
-@keyframes tumble{0%{transform:rotate(-30deg) scale(.6);opacity:0}100%{transform:none;opacity:1}}
-.die.anim{animation:tumble .35s ease-out both}
-@media (prefers-reduced-motion:reduce){.die.anim{animation:none}}
-.big{font-family:var(--display);font-size:56px;line-height:.9}
-.stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.stat b{font-family:var(--mono);font-size:20px}
-.meter{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
-.meter span{height:12px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)}
-.meter span.on{background:var(--warn);border-color:var(--warn)}
-.wound{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
-.wound span{height:14px;border-radius:3px;background:var(--panel2);border:1px solid var(--line)}
-.wound span.on{background:var(--blood);border-color:var(--blood)}
-.wound.seq span.on{background:#8a4a2a;border-color:#b3653c}
-.step{display:flex;align-items:center;gap:6px}
-.step button{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);font-weight:700;font-size:18px}
-.step b{min-width:28px;text-align:center;font-family:var(--mono);font-size:18px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700;background:var(--panel2);border:1px solid var(--line)}
+.pill.k{border-color:var(--killer);color:#e0cff7;background:var(--killer-bg)}
+.pill.f{border-color:var(--fuga);color:#c4eef6;background:var(--fuga-bg)}
+.pill.w{border-color:var(--amber);color:#f6d79c;background:var(--amber-bg)}
+.pill.r{border-color:var(--blood);color:#ffd3d9;background:var(--blood-bg)}
+.pill.dead{background:#000;border-color:#555;color:#bbb}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);display:inline-block}
+.dot.w{background:var(--amber)}
+/* header + faixa de cena */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{padding-block:8px;gap:8px}
+.brand{font-family:var(--display);font-size:22px;letter-spacing:.06em;color:var(--blood);line-height:1}
+.scene{display:flex;align-items:center;gap:10px;border-radius:12px;padding:9px 12px;border:1px solid}
+.scene b{font-family:var(--display);font-weight:400;font-size:20px;letter-spacing:.05em;text-transform:uppercase;line-height:1}
+.scene span{font-size:13px}
+.scene.livre{background:var(--slate-bg);border-color:#2c3a43;color:#d3e0e8}
+.scene.suspense{background:var(--amber-bg);border-color:var(--amber);color:#f8e2b8}
+.scene.encontro{background:var(--blood-bg);border-color:var(--blood);color:#ffdfe3}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(214,21,47,.25)}}
+.scene.encontro{animation:pulse 2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.scene.encontro{animation:none}}
+/* abas */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;background:#120d0e;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.tabs nav{max-width:620px;margin:0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
+.tabs button{padding:9px 2px 11px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:4px}
+.tabs button.on{color:var(--bone)} .tabs button.on svg{color:var(--blood)}
+.sub{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.sub button{border-radius:9px;padding:10px 4px;font-weight:700;font-size:14px;color:var(--muted)}
+.sub button.on{background:var(--panel2);color:var(--bone);box-shadow:inset 0 0 0 1px var(--line2)}
+/* dados */
+.dice{display:flex;gap:6px;flex-wrap:wrap}
+.d{width:38px;height:38px;border-radius:9px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:6px;background:var(--bone);box-shadow:inset 0 -3px 0 rgba(0,0,0,.22)}
+.d i{width:6px;height:6px;border-radius:50%;place-self:center}
+.d i.p{background:#1a1012}
+.d.empty{background:transparent;border:2px dashed var(--line2);box-shadow:none}
+.d.fu{background:var(--fuga)} .d.fu i.p{background:#062026}
+.d.lg{width:54px;height:54px;padding:9px;border-radius:12px} .d.lg i{width:9px;height:9px}
+.d.fail{background:#3d3033} .d.fail i.p{background:#a99}
+.d.six{background:var(--blood)} .d.six i.p{background:#fff}
+.d.pick{cursor:pointer}
+.d.sel{outline:3px solid var(--blood);outline-offset:2px}
+@keyframes tumble{0%{transform:rotate(-40deg) scale(.5);opacity:0}100%{transform:none;opacity:1}}
+.d.anim{animation:tumble .4s cubic-bezier(.2,1.4,.4,1) both}
+@media (prefers-reduced-motion:reduce){.d.anim{animation:none}}
+/* status */
+.who{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.st{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:9px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.st .v{font-family:var(--display);font-size:30px;line-height:1;display:flex;align-items:baseline;gap:3px}
+.st .v small{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.st.pt .v{color:var(--pt)} .st.fe .v{color:#ff6b7f} .st.se .v{color:#e09a6a}
+.bar{height:8px;border-radius:99px;background:#0c0809;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:99px}
+.bar.pt span{background:var(--pt)} .bar.fe span{background:var(--blood)} .bar.se span{background:#b3653c} .bar.fu span{background:var(--fuga)}
+.fuga{background:var(--fuga-bg);border:1px solid var(--fuga);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+/* ações */
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;min-height:96px}
+.act svg.i{width:28px;height:28px;color:var(--blood)}
+.act b{font-size:16px;line-height:1.1}
+.act span{font-size:12px;color:var(--muted);line-height:1.25}
+.act.k svg.i{color:var(--killer)}
+.act.go{border-color:var(--blood);background:var(--blood-bg)}
+.act[disabled]{opacity:.35;cursor:not-allowed}
+/* listas */
 .list{display:flex;flex-direction:column;gap:8px}
-.item{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--panel2)}
-.item p{margin:0}
-.banner{border:2px solid var(--blood);background:#2a0b11;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
-.log{font-size:13px;display:flex;flex-direction:column;gap:4px;max-height:280px;overflow:auto}
-.log div{border-left:3px solid var(--line);padding-left:8px}
-.log div.k{border-color:var(--killer)} .log div.d{border-color:var(--blood)} .log div.m{border-color:var(--warn)}
-details{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel2)}
-details summary{cursor:pointer;font-weight:600}
-details p{margin:8px 0 0}
-.surv{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.line{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);min-width:0}
+.line .grow{flex:1;min-width:0}
+.line .grow b{display:block}
+.line .grow span{font-size:13px;color:var(--muted)}
+.cost{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--pt);min-width:44px;text-align:right}
+.cost.k{color:var(--killer)}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:40px;height:40px;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);font-weight:700;font-size:20px}
+.step b{min-width:30px;text-align:center;font-family:var(--mono);font-size:20px}
+.banner{border:2px solid var(--blood);background:var(--blood-bg);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.note{border-left:3px solid var(--line2);padding:4px 0 4px 10px;font-size:14px;color:var(--muted)}
+.log{font-size:14px;display:flex;flex-direction:column;gap:6px;max-height:320px;overflow:auto}
+.log div{border-left:3px solid var(--line2);padding-left:9px}
+.log div.k{border-color:var(--killer)} .log div.d{border-color:var(--blood)} .log div.m{border-color:var(--amber)}
+details{border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+details>summary{cursor:pointer;font-weight:700;padding:14px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"+";font-size:22px;color:var(--muted);line-height:1}
+details[open]>summary::after{content:"–"}
+details>.in{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+.mini{display:flex;gap:3px}
+.mini i{width:10px;height:10px;border-radius:3px;background:var(--bone)}
+.mini i.e{background:transparent;border:1px solid var(--line2)}
+.dead-name{color:#888;text-decoration:line-through}
 /* sheet */
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--panel);border-top:2px solid var(--blood);border-radius:18px 18px 0 0;width:100%;max-width:640px;max-height:88vh;overflow:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--bone);color:#111;padding:10px 16px;border-radius:999px;font-weight:600;z-index:50;max-width:90vw;text-align:center}
-.hero{padding-block:30px 10px;display:flex;flex-direction:column;gap:6px}
-.hero h1{font-size:64px;color:var(--blood)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--panel);border-top:3px solid var(--blood);border-radius:20px 20px 0 0;width:100%;max-width:620px;max-height:90vh;overflow:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+.target{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.target .n{font-family:var(--display);font-size:44px;line-height:1;color:var(--bone);min-width:52px;text-align:center}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line2);background:var(--panel2);border-radius:999px;padding:8px 13px;font-weight:700;font-size:14px}
+.chip.on{background:var(--blood);border-color:var(--blood);color:#fff}
+.chip.own{border-color:#7a3a45}
+.tog{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.tog .sw{width:46px;height:28px;border-radius:99px;background:#0c0809;border:1px solid var(--line2);position:relative;flex:none}
+.tog .sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--dim);transition:left .15s}
+.tog.on .sw{background:var(--blood);border-color:var(--blood)} .tog.on .sw::after{left:21px;background:#fff}
+.tog[disabled]{opacity:.4}
+.verdict{font-family:var(--display);font-size:46px;line-height:1;letter-spacing:.03em;text-transform:uppercase}
+.verdict.ok{color:var(--ok)} .verdict.no{color:var(--blood)}
+.conseq{display:flex;flex-direction:column;gap:8px}
+.conseq div{display:flex;gap:10px;align-items:center;background:var(--panel2);border-radius:10px;padding:9px 12px;font-size:15px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--bone);color:#111;padding:11px 18px;border-radius:999px;font-weight:700;z-index:50;max-width:90vw;text-align:center}
+.hero{padding-block:36px 8px;display:flex;flex-direction:column;gap:8px}
 .arqs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.arq{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel2);text-align:left;display:flex;flex-direction:column;gap:2px}
-.arq.on{border-color:var(--blood);background:#3a1219}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:14px}
-.pill-dead{color:#bbb;text-decoration:line-through}
-hr{border:0;border-top:1px solid var(--line);margin:4px 0;width:100%}
+.arq{border:1px solid var(--line2);border-radius:12px;padding:10px 12px;background:var(--panel2);text-align:left;display:flex;flex-direction:column;gap:2px}
+.arq.on{border-color:var(--blood);background:var(--blood-bg)}
+.lobbies{display:grid;gap:10px}
+.lobby{display:flex;gap:14px;align-items:center;text-align:left;padding:16px;border-radius:16px;border:1px solid var(--line2);background:var(--panel2)}
+.lobby svg.i{width:34px;height:34px}
+.lobby b{font-family:var(--display);font-weight:400;font-size:24px;letter-spacing:.04em;text-transform:uppercase;display:block;line-height:1}
+.lobby span{font-size:13px;color:var(--muted)}
+.lobby[disabled]{opacity:.4}
+.code{font-family:var(--mono);font-size:30px;letter-spacing:.25em;font-weight:700}
+.big{font-family:var(--display);font-size:64px;line-height:.9}
 </style>
 
 <div id="app"></div>
@@ -413,21 +466,58 @@ async function sync(){
   if(Object.keys(patch).length){ syncing=true; try{await upd(P.sob(S.code,S.uid),patch)}catch(e){} syncing=false; }
 }
 
+/* ============ ÍCONES ============ */
+const IC={
+ dice:'<rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
+ run:'<path d="M4 12h12"/><path d="M12 6l6 6-6 6"/><path d="M20 4v16"/>',
+ fist:'<path d="M12 2l2.4 5.6L20 8l-4.3 3.9L17 18l-5-3-5 3 1.3-6.1L4 8l5.6-.4z"/>',
+ eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ heart:'<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20z"/>',
+ wind:'<path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h16"/><path d="M3 16h12a3 3 0 1 1-3 3"/>',
+ flame:'<path d="M12 3c.8 3.6 5.5 5.6 5.5 10.5a5.5 5.5 0 0 1-11 0c0-2.8 1.6-4.2 2.6-6.4 1 1.8 1.8 2.6 2.9 2.9"/>',
+ skull:'<path d="M5 11a7 7 0 1 1 14 0v3.5l-2 1V19H7v-3.5l-2-1z"/><circle cx="9.3" cy="11.5" r="1.6"/><circle cx="14.7" cy="11.5" r="1.6"/><path d="M12 15v1.5"/>',
+ drop:'<path d="M12 3s6 6.8 6 11a6 6 0 0 1-12 0c0-4.2 6-11 6-11z"/>',
+ bolt:'<path d="M13 2L4.5 13.5H11L10 22l8.5-11.5H12z"/>',
+ knife:'<path d="M14.5 3.5l6 6-9.5 9.5-3-3z"/><path d="M8 16l-4.5 4.5"/>',
+ scare:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><path d="M12 16.5v.5"/>',
+ door:'<path d="M5 21V4h10v17"/><path d="M15 6h4v15"/><circle cx="12" cy="13" r=".8" fill="currentColor"/><path d="M2 21h20"/>',
+ wall:'<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 12h18M9 5v7M15 12v7"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+ mask:'<path d="M4 5c5-2 11-2 16 0 0 9-3 15-8 15S4 14 4 5z"/><path d="M8 10h2.5M13.5 10H16"/><path d="M10 15c1.3.8 2.7.8 4 0"/>',
+ crown:'<path d="M3 18h18"/><path d="M4 16l2-9 6 5 6-5 2 9z"/>',
+ table:'<circle cx="12" cy="12" r="5"/><circle cx="12" cy="3.5" r="1.5"/><circle cx="12" cy="20.5" r="1.5"/><circle cx="3.5" cy="12" r="1.5"/><circle cx="20.5" cy="12" r="1.5"/>',
+ book:'<path d="M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z"/>',
+ star:'<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>',
+ copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>'
+};
+const ic=(n,cls="")=>`<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||""}</svg>`;
+
 /* ============ RENDER ============ */
 function render(){
   const app=$("#app");
   const ae=document.activeElement;
   if(ae&&ae.dataset&&ae.dataset.live!==undefined&&app.contains(ae)){ S.pending=true; return; }
   S.pending=false;
-  const keep={};app.querySelectorAll("form[data-form] [name]").forEach(el=>{if(el.type!=="submit")keep[el.form.dataset.form+"."+el.name]=el.value});
+  const keep={};app.querySelectorAll("form[data-form] [name]").forEach(el=>{if(el.type!=="submit"&&el.type!=="checkbox")keep[el.form.dataset.form+"."+el.name]=el.value});
+  const y=window.scrollY;
   app.innerHTML=view();
   app.querySelectorAll("form[data-form] [name]").forEach(el=>{const k=el.form.dataset.form+"."+el.name;if(k in keep&&!(el.name==="hab"&&S.draftArqChanged))el.value=keep[k]});S.draftArqChanged=false;
+  if(Math.abs(window.scrollY-y)>2) window.scrollTo(0,y);
   renderSheet();
 }
 document.addEventListener("focusout",()=>setTimeout(()=>{if(S.pending)render()},50));
 
+function diceRow(n,max=6,cls=""){let h="";for(let i=0;i<max;i++)h+=i<n?dieFace(6,cls):`<span class="d empty ${cls}"></span>`;return `<div class="dice" role="img" aria-label="${n} dados">${h}</div>`}
+const FACES=[6,5,4,3,2,1];
+function dieFace(v,cls=""){let h="";for(let i=0;i<9;i++)h+=`<i class="${PIPS[v].includes(i)?"p":""}"></i>`;return `<span class="d ${cls}">${h}</span>`}
+function dieHTML(v,cls=""){let h="";for(let i=0;i<9;i++)h+=`<i class="${PIPS[v].includes(i)?"p":""}"></i>`;return `<span class="d lg ${cls}" role="img" aria-label="dado ${v}">${h}</span>`}
+function bar(n,max,cls){return `<div class="bar ${cls}"><span style="width:${Math.round(100*Math.min(n,max)/max)}%"></span></div>`}
+function mini(n,max=6){let h="";for(let i=0;i<max;i++)h+=`<i class="${i<n?"":"e"}"></i>`;return `<span class="mini" aria-label="${n} dados">${h}</span>`}
+function sub(key,opts){const cur=S.subs?.[key]||opts[0][0];return {cur,html:`<div class="sub">${opts.map(([k,n])=>`<button data-act="sub" data-key="${key}" data-v="${k}" class="${k===cur?"on":""}">${n}</button>`).join("")}</div>`}}
+
 function view(){
-  if(S.fatal) return `<div class="wrap"><div class="hero"><h1>Brutal</h1><p class="muted">Mesa de jogo para Brutal RPG</p></div><div class="card"><p>${esc(S.fatal)}</p></div></div>`;
+  if(S.fatal) return `<div class="wrap"><div class="hero"><h1>Brutal</h1></div><div class="card"><p>${esc(S.fatal)}</p></div></div>`;
   if(!S.ready) return `<div class="wrap"><div class="hero"><h1>Brutal</h1><p class="muted">Afiando a faca…</p></div></div>`;
   if(!S.conta||S.renomeando) return viewConta();
   if(!S.code||!S.mesa) return viewHome();
@@ -436,50 +526,59 @@ function view(){
 }
 
 function viewConta(){
-  return `<div class="wrap"><div class="hero"><h1>Brutal</h1><p class="muted">Ficha rápida, pilhas de dados automáticas e lobbies para Mestre, Killer e Sobreviventes. Sem cadastro: o apelido fica salvo neste aparelho.</p></div>
-  <form class="card" data-form="conta"><h2>Crie seu perfil</h2>
-  <p class="small muted">Seu apelido é o nome que a mesa vai ver. Dá para trocar depois.</p>
-  <label class="lbl" for="ap">Apelido</label><input id="ap" name="apelido" maxlength="24" required placeholder="Ex.: Jota" autocomplete="nickname">
-  <button class="btn primary block">Começar</button></form></div>`;
+  return `<div class="wrap"><div class="hero"><h1>Brutal</h1><p class="muted">A mesa do seu slasher no celular: ficha, dados e monstro, tudo sincronizado.</p></div>
+  <form class="card" data-form="conta"><h2>Qual seu apelido?</h2>
+  <input id="ap" name="apelido" maxlength="24" required placeholder="Ex.: Jota" autocomplete="nickname" aria-label="Apelido" value="${esc(S.conta?.apelido||"")}">
+  <p class="tiny muted">Fica salvo só neste aparelho. Sem cadastro.</p>
+  <button class="btn primary xl block">Começar</button></form></div>`;
 }
 function viewHome(){
   const mesas=(S.conta.mesas||[]);
-  return `<div class="wrap"><div class="hero"><span class="lbl">Olá, ${esc(S.conta.apelido)}</span><h1>Brutal</h1><p class="muted">Crie uma mesa ou entre numa com o código.</p></div>${S.aviso?`<div class="banner"><p class="small">${esc(S.aviso)}</p></div>`:""}${S.conectando?`<div class="card"><p>Conectando à mesa <b class="num">${esc(S.conectando)}</b>…</p></div>`:""}
-  <form class="card" data-form="entrar"><h2>Entrar numa mesa</h2><label class="lbl" for="cod">Código da mesa</label><input id="cod" name="code" maxlength="6" required placeholder="Ex.: K7QX2" style="text-transform:uppercase;letter-spacing:.2em" class="num"><button class="btn primary block">Entrar</button></form>
-  <form class="card" data-form="criar"><h2>Criar mesa</h2><label class="lbl" for="nm">Nome do Thriller</label><input id="nm" name="nome" maxlength="40" required placeholder="Ex.: Acampamento Lago Turvo">
-  <label class="row small" for="sm"><input type="checkbox" id="sm" name="souMestre" checked style="width:auto"> Eu vou ser o Mestre</label>
-  <p class="small muted">Este aparelho vira o <b>host</b> da mesa: guarda tudo e precisa ficar com a página aberta durante o jogo. O ideal é um PC ligado na tomada.</p>
-  <button class="btn block">Criar e hospedar mesa</button></form>
-  ${mesas.length?`<div class="card"><h3>Suas mesas</h3><div class="list">${mesas.map(m=>`<button class="btn" data-act="abrir" data-code="${esc(m.code)}" style="justify-content:space-between"><span>${esc(m.nome)}${hosted().includes(m.code)?' <span class="chip">host</span>':""}</span><span class="num muted">${esc(m.code)}</span></button>`).join("")}</div></div>`:""}
-  <div class="card"><div class="row between"><span class="small muted">Perfil: <b>${esc(S.conta.apelido)}</b></span><button class="btn sm ghost" data-act="renomear">Trocar apelido</button></div></div></div>`;
+  return `<div class="wrap"><div class="hero"><span class="lbl">Olá, ${esc(S.conta.apelido)}</span><h1>Brutal</h1></div>
+  ${S.aviso?`<div class="banner"><p class="small">${esc(S.aviso)}</p></div>`:""}
+  ${S.conectando?`<div class="card"><p>Conectando à mesa <b class="num">${esc(S.conectando)}</b>…</p></div>`:""}
+  <form class="card" data-form="entrar"><h2>Entrar na mesa</h2>
+   <input id="cod" name="code" maxlength="5" required placeholder="CÓDIGO" class="code" style="text-align:center;text-transform:uppercase" autocomplete="off" aria-label="Código da mesa">
+   <button class="btn primary xl block">Entrar</button></form>
+  ${mesas.length?`<div class="card"><span class="lbl">Voltar para</span><div class="list">${mesas.map(m=>`<button class="line" data-act="abrir" data-code="${esc(m.code)}"><div class="grow" style="text-align:left"><b>${esc(m.nome)}</b><span>${hosted().includes(m.code)?"Você hospeda esta mesa":"Mesa de um amigo"}</span></div><span class="num muted">${esc(m.code)}</span></button>`).join("")}</div></div>`:""}
+  <details><summary>${ic("plus")} Criar uma mesa nova</summary><div class="in"><form data-form="criar" class="list">
+   <input id="nm" name="nome" maxlength="40" required placeholder="Nome do Thriller" aria-label="Nome do Thriller">
+   <label class="tog on" for="sm" data-tog><span>Eu vou ser o Mestre</span><input type="checkbox" id="sm" name="souMestre" checked hidden><span class="sw"></span></label>
+   <p class="tiny muted">Este aparelho guarda a mesa e precisa ficar com a página aberta durante o jogo.</p>
+   <button class="btn block">Criar e hospedar</button></form></div></details>
+  <button class="btn ghost" data-act="renomear">Trocar apelido (${esc(S.conta.apelido)})</button></div>`;
 }
-function netChip(){if(NET.role==="host")return `<span class="chip f">Host · ${NET.conns.filter(c=>c.open).length} on</span>`;if(NET.status==="on")return `<span class="chip f">Conectado</span>`;return `<span class="chip w">${NET.status==="reconectando"?"Reconectando…":"Conectando…"}</span>`}
+const CENA={livre:["Cena Livre","Falhas vão para o Killer"],suspense:["Suspense","Falhas vão para o Killer"],encontro:["Encontro","Falhas vão para o Descarte"]};
+function netChip(){if(NET.role==="host")return `<span class="tiny muted"><span class="dot"></span> Host · ${NET.conns.filter(c=>c.open).length} on</span>`;if(NET.status==="on")return `<span class="tiny muted"><span class="dot"></span> Online</span>`;return `<span class="tiny muted"><span class="dot w"></span> ${NET.status==="reconectando"?"Reconectando…":"Conectando…"}</span>`}
 function header(){
-  const m=S.mesa,p=pools(); const vejoK=souKiller()||souMestre();
-  const md={livre:"Cena Livre",suspense:"Suspense",encontro:"Encontro"}[modo()];
-  return `<header class="top"><div class="wrap"><div class="row between"><div style="min-width:0"><div class="brand">BRUTAL</div><div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.nome)} · <span class="num">${esc(S.code)}</span></div></div>
-  <span class="chip ${modo()==="encontro"?"on":modo()==="suspense"?"w":""}">${md}${modo()==="encontro"?` · R${m.enc?.rodada||1}`:""}</span></div>
-  <div class="pools"><span class="chip">Descarte <b class="num">${p.descarte}</b></span>${vejoK?`<span class="chip k">Pilha do Killer <b class="num">${p.killer}</b></span><span class="chip k">PH <b class="num">${S.killer?.ph??0}</b></span>`:`<span class="chip k">Killer: ${S.mesa.killer?esc(nick(S.mesa.killer)):"vago"}</span>`}
-  <span class="chip">Falhas → ${modo()==="encontro"?"Descarte":"Killer"}</span>${netChip()}</div></div></header>`;
+  const m=S.mesa,p=pools(),md=modo(); const vejoK=souKiller()||souMestre();
+  return `<header class="top"><div class="wrap">
+   <div class="row between"><div class="row" style="gap:10px;min-width:0"><span class="brand">BRUTAL</span><span class="tiny muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw">${esc(m.nome)}</span></div>${netChip()}</div>
+   <div class="scene ${md}">${ic(md==="encontro"?"knife":md==="suspense"?"eye":"table")}<div style="flex:1;min-width:0"><b>${CENA[md][0]}${md==="encontro"?` · R${m.enc?.rodada||1}`:""}</b><br><span>${CENA[md][1]}</span></div>
+   <div style="text-align:right"><span class="tiny">Descarte</span><br><b class="num" style="font-family:var(--mono);font-size:18px">${p.descarte}</b></div>
+   ${vejoK?`<div style="text-align:right"><span class="tiny">Killer</span><br><b class="num" style="font-family:var(--mono);font-size:18px">${p.killer}</b></div>`:""}</div>
+  </div></header>`;
 }
 function viewLobby(){
   const m=S.mesa;
-  return `<div class="wrap"><div class="card"><h2>Escolha seu lobby</h2><p class="small muted">Você pode trocar depois na aba Mesa.</p>
-  <button class="btn primary block" data-act="lobby" data-p="sobrevivente">Sobrevivente</button>
-  <button class="btn killer block" data-act="lobby" data-p="killer">Killer ${m.killer&&m.killer!==S.uid?`<span class="small">(hoje: ${esc(nick(m.killer))})</span>`:""}</button>
-  <button class="btn block" data-act="lobby" data-p="mestre" ${m.mestre&&m.mestre!==S.uid?"disabled":""}>Mestre ${m.mestre&&m.mestre!==S.uid?`<span class="small">(${esc(nick(m.mestre))})</span>`:""}</button></div>
-  <div class="card"><p class="small">Passe o código <b class="num">${esc(S.code)}</b> para a galera entrar.</p><button class="btn sm ghost" data-act="sair">Voltar ao início</button></div></div>`;
+  const mOcup=m.mestre&&m.mestre!==S.uid;
+  return `<div class="wrap"><h2>Como você vai jogar?</h2><div class="lobbies">
+  <button class="lobby" data-act="lobby" data-p="sobrevivente">${ic("user")}<div><b>Sobrevivente</b><span>Monte sua ficha e tente sair viva.</span></div></button>
+  <button class="lobby" data-act="lobby" data-p="killer" style="border-color:var(--killer)">${ic("mask")}<div><b>Killer</b><span>${m.killer&&m.killer!==S.uid?`Hoje com ${esc(nick(m.killer))}. Você pode assumir.`:"Controle o monstro e receba os dados perdidos."}</span></div></button>
+  <button class="lobby" data-act="lobby" data-p="mestre" ${mOcup?"disabled":""}>${ic("crown")}<div><b>Mestre</b><span>${mOcup?`Já é ${esc(nick(m.mestre))}.`:"Narre, controle a cena e dê pontos."}</span></div></button></div>
+  <div class="card"><span class="lbl">Código da mesa</span><span class="code">${esc(S.code)}</span><button class="btn sm" data-act="convite">${ic("copy")} Copiar convite</button></div>
+  <button class="btn ghost" data-act="sair">Voltar ao início</button></div>`;
 }
 function tabList(){
   const p=papel(); const t=[];
-  if(p==="sobrevivente") t.push(["ficha","Ficha"]);
-  if(p==="killer") t.push(["killer","Killer"]);
-  if(p==="mestre"){t.push(["mestre","Mestre"]);t.push(["killer","Killer"]);}
-  t.push(["mesa","Mesa"]); t.push(["regras","Regras"]);
+  if(p==="sobrevivente") t.push(["ficha","Ficha","user"]);
+  if(p==="killer") t.push(["killer","Killer","mask"]);
+  if(p==="mestre"){t.push(["mestre","Mestre","crown"]);t.push(["killer","Killer","mask"]);}
+  t.push(["mesa","Mesa","table"]); t.push(["regras","Regras","book"]);
   return t;
 }
 function curTab(){const t=tabList().map(x=>x[0]); return t.includes(S.tab)?S.tab:t[0]}
-function tabs(){const c=curTab();return `<div class="tabs"><nav>${tabList().map(([k,n])=>`<button data-act="tab" data-t="${k}" class="${k===c?"on":""}"><span class="ic"></span>${n}</button>`).join("")}</nav></div>`}
+function tabs(){const c=curTab();return `<div class="tabs"><nav>${tabList().map(([k,n,i])=>`<button data-act="tab" data-t="${k}" class="${k===c?"on":""}">${ic(i)}${n}</button>`).join("")}</nav></div>`}
 function viewTab(){
   const t=curTab();
   if(t==="ficha") return viewFicha();
@@ -490,194 +589,222 @@ function viewTab(){
 }
 
 /* ---------- SOBREVIVENTE ---------- */
+function statusCard(s){
+  const A=ARQ[s.arq]; const dead=s.status==="morto", e=escapou(s);
+  const marcs=Object.entries(s.marc||{}).filter(([k,v])=>v>0);
+  const flags=[s.flags?.aquecer&&"Aquecida",s.flags?.planejar&&"Fuga planejada",s.flags?.preparar&&"Preparada"].filter(Boolean);
+  return `<section class="card">
+   <div class="who"><div style="min-width:0"><h2 class="${dead?"dead-name":""}">${esc(s.nome)}</h2><span class="tiny muted">${esc(s.arq)} · ${A.est.join(" + ")}</span></div>
+    ${dead?`<span class="pill dead">${ic("skull")} Morta</span>`:e?`<span class="pill f">${ic("run")} Escapou</span>`:`<span class="pill">Viva</span>`}</div>
+   <div class="row between"><span class="lbl">Seus dados</span><span class="num muted">${s.pilha}/6</span></div>
+   ${diceRow(s.pilha)}
+   <div class="stats">
+    <div class="st pt"><span class="lbl">Tensão</span><span class="v">${s.pt}<small>/10</small></span>${bar(s.pt,10,"pt")}</div>
+    <div class="st fe"><span class="lbl">Ferida</span><span class="v">${s.ferida}<small>/6</small></span>${bar(s.ferida,6,"fe")}</div>
+    <div class="st se"><span class="lbl">Sequela</span><span class="v">${s.sequela}<small>/5</small></span>${bar(s.sequela,5,"se")}</div>
+   </div>
+   ${(marcs.length||flags.length||(s.incap||[]).length)?`<div class="row">${marcs.map(([k,v])=>`<span class="pill w">${MARC_N[k]} ${v}</span>`).join("")}${(s.incap||[]).map(x=>`<span class="pill dead">${x} travado</span>`).join("")}${flags.map(f=>`<span class="pill f">${f}</span>`).join("")}</div>`:""}
+  </section>`;
+}
 function viewFicha(){
   const s=me();
   if(!s||S.draft.criando) return viewCriarSob();
-  const A=ARQ[s.arq]; const enc=modo()==="encontro"; const p=pools();
-  const susto=S.mesa.susto; const sustoPend=susto&&susto.id&&s.sustoId!==susto.id&&s.status!=="morto"&&!escapou(s);
-  const marcs=Object.entries(s.marc||{}).filter(([k,v])=>v>0);
-  const dead=s.status==="morto", esc_=escapou(s);
-  const habTxt=A.hab.find(h=>h[0]===s.hab);
+  const enc=modo()==="encontro"; const dead=s.status==="morto", esc_=escapou(s);
+  const susto=S.mesa.susto; const sustoPend=susto&&susto.id&&s.sustoId!==susto.id&&!dead&&!esc_;
   let h=`<div class="wrap">`;
-  if(sustoPend) h+=`<div class="banner"><h2>Teste de Susto!</h2><p class="small">Role um dado da sua Pilha Comum. Falhou, ele ${susto.sac?"é <b>sacrificado para o Killer</b>":"vai para o <b>Descarte</b>"}.</p><button class="btn primary block" data-act="susto">Rolar o Susto</button></div>`;
-  h+=`<section class="card"><div class="row between"><div style="min-width:0"><span class="lbl">${esc(s.arq)} · Iniciativa ${A.ini}</span><h2 class="${dead?"pill-dead":""}">${esc(s.nome)}</h2></div>
-   ${dead?`<span class="chip dead">Morta</span>`:esc_?`<span class="chip f">Escapou</span>`:`<span class="chip">Viva</span>`}</div>
-   <div class="row between"><span class="lbl">Pilha Comum</span><span class="num"><b>${s.pilha}</b>/6</span></div>${pileHTML(s.pilha)}
-   ${enc?`<div class="row between"><span class="lbl">Pilha de Fuga</span><span class="num"><b>${s.fuga||0}</b>/${fugaAlvo()}</span></div>${fugaHTML(s.fuga||0,fugaAlvo())}`:""}
-   <div class="row between"><span class="lbl">Pontos de Tensão</span><span class="num"><b>${s.pt}</b>/10</span></div>${meterHTML(s.pt)}
-   <div class="grid2"><div><div class="row between"><span class="lbl">Ferida</span><span class="num">${s.ferida}/6</span></div>${woundHTML(s.ferida,6)}</div>
-   <div><div class="row between"><span class="lbl">Sequela</span><span class="num">${s.sequela}/5</span></div>${woundHTML(s.sequela,5,"seq")}</div></div>
-   <div class="row">${marcs.map(([k,v])=>`<span class="chip w">${MARC_N[k]} ${v}</span>`).join("")}${(s.incap||[]).map(e=>`<span class="chip dead">${e} incapacitado</span>`).join("")}
-   ${s.flags?.aquecer?`<span class="chip">Aquecida</span>`:""}${s.flags?.planejar?`<span class="chip f">Fuga planejada</span>`:""}${s.flags?.preparar?`<span class="chip">Preparada p/ o pior</span>`:""}</div>
-   <div class="row between"><span class="lbl">Recursos</span><div class="step"><button data-act="sobStep" data-f="recursos" data-d="-1" aria-label="menos recurso">−</button><b>${s.recursos||0}</b><button data-act="sobStep" data-f="recursos" data-d="1" aria-label="mais recurso">+</button></div></div>
-  </section>`;
-  if(dead){
-    h+=`<section class="card"><p>Sua Sobrevivente morreu. Ainda dá para ajudar a mesa no papel de Killer, ou criar outra Sobrevivente.</p><button class="btn block" data-act="novaSob">Criar nova Sobrevivente</button></section>`;
-  } else {
-    h+=`<section class="card"><button class="btn primary block" style="min-height:56px;font-size:18px" data-act="rolar" data-tipo="teste" ${s.pilha<1?"disabled":""}>Rolar teste</button>
-     <p class="small muted">Falhas ${enc?"vão para o <b>Descarte</b> (Encontro)":"são <b>sacrificadas para o Killer</b> ("+(modo()==="suspense"?"Suspense":"Cena Livre")+")"}. Descarte disponível: <b class="num">${p.descarte}</b>.</p></section>`;
-    if(enc&&!esc_){
-      h+=`<section class="card"><h3>Manobras do Encontro</h3><p class="small muted">Uma por turno. Vantagens ficam travadas no Encontro.</p><div class="grid2">
-      <button class="btn" data-act="rolar" data-tipo="vazar">Vazar Dali</button>
-      <button class="btn" data-act="rolar" data-tipo="partir">Partir pra Cima</button>
-      <button class="btn" data-act="rolar" data-tipo="distrair">Distrair</button>
-      <button class="btn" data-act="rolar" data-tipo="ajudar">Ajudar Alguém</button>
-      <button class="btn" data-act="folego">Recuperar Fôlego</button>
-      <button class="btn" data-act="arriscar" ${s.arriscouSessao===S.mesa.sessao?"disabled":""}>Arriscar Tudo</button></div></section>`;
+  if(sustoPend) h+=`<div class="banner"><div class="row">${ic("scare")}<h2>Teste de Susto!</h2></div><p class="small">Role 1 dado. Tirou 1, 2 ou 3: ele ${susto.sac?"vai para o Killer":"vai para o Descarte"}.</p><button class="btn primary xl block" data-act="susto">Rolar</button></div>`;
+  h+=statusCard(s);
+  const tb=sub("ficha",[["jogar","Jogar"],["vant","Vantagens"],["eu","Ficha"]]);
+  h+=tb.html;
+  if(tb.cur==="jogar"){
+    if(dead){
+      h+=`<section class="card"><p>Sua Sobrevivente morreu. Você ainda pode assumir o Killer na aba Mesa, ou criar outra.</p><button class="btn primary block" data-act="novaSob">Criar nova Sobrevivente</button></section>`;
+    } else if(enc){
+      if(esc_) h+=`<section class="fuga"><b>Você escapou deste Encontro.</b><p class="small">Aguarde o fim da cena. Seus dados de fuga voltam para a pilha.</p></section>`;
+      else {
+        const alvo=fugaAlvo(),f=s.fuga||0;
+        h+=`<section class="fuga"><div class="row between"><span class="lbl" style="color:#9fdbe6">Fuga</span><b class="num">${f}/${alvo}</b></div>${diceRow(f,alvo,"fu")}<p class="small">${f>=alvo?"Pronto para escapar.":`Faltam <b>${alvo-f}</b> dado(s) para escapar.`}</p></section>
+        <section class="card"><span class="lbl">Seu turno · escolha uma manobra</span><div class="acts">
+         <button class="act go" data-act="rolar" data-tipo="vazar" ${s.pilha<1?"disabled":""}>${ic("run")}<b>Vazar Dali</b><span>Sucessos vão para a Fuga</span></button>
+         <button class="act" data-act="rolar" data-tipo="partir" ${s.pilha<1?"disabled":""}>${ic("fist")}<b>Partir pra Cima</b><span>Killer perde 1 dado</span></button>
+         <button class="act" data-act="rolar" data-tipo="distrair" ${s.pilha<1?"disabled":""}>${ic("eye")}<b>Distrair</b><span>Matar fica mais caro</span></button>
+         <button class="act" data-act="rolar" data-tipo="ajudar" ${s.pilha<1?"disabled":""}>${ic("heart")}<b>Ajudar Alguém</b><span>Doe dados a uma aliada</span></button>
+         <button class="act" data-act="folego">${ic("wind")}<b>Recuperar Fôlego</b><span>+1 dado do Descarte</span></button>
+         <button class="act" data-act="arriscar" ${s.arriscouSessao===S.mesa.sessao?"disabled":""}>${ic("flame")}<b>Arriscar Tudo</b><span>Perde tudo, alguém escapa</span></button>
+        </div></section>`;
+      }
+    } else {
+      h+=`<section class="card"><div class="row">${ic("dice")}<b>Quando o Mestre pedir um teste</b></div><p class="small muted">Escolha quantos dados arriscar. O que falhar vai direto para ${esc(S.killer?.nome||"o Killer")}.</p></section>`;
     }
-    h+=`<section class="card"><h3>Vantagens</h3>${enc?`<p class="small muted">Travadas durante o Encontro.</p>`:""}<div class="list">`;
+    h+=`<section class="line"><div class="grow"><b>Recursos</b><span>Cada um reduz 1 a Dificuldade</span></div><div class="step"><button data-act="sobStep" data-f="recursos" data-d="-1" aria-label="menos recurso">−</button><b>${s.recursos||0}</b><button data-act="sobStep" data-f="recursos" data-d="1" aria-label="mais recurso">+</button></div></section>`;
+    if(!dead&&!esc_&&!enc) h+=`<div style="position:sticky;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:5"><button class="btn primary xl block" data-act="rolar" data-tipo="teste" ${s.pilha<1?"disabled":""} style="box-shadow:0 8px 24px rgba(0,0,0,.6)">${ic("dice")} Rolar teste</button></div>`;
+  }
+  if(tb.cur==="vant"){
+    const A=ARQ[s.arq];
+    h+=`<section class="card"><div class="row between"><span class="lbl">Seus pontos de tensão</span><b class="num" style="color:var(--pt);font-size:20px">${s.pt} PT</b></div>
+     ${enc?`<p class="note">Vantagens ficam travadas durante o Encontro.</p>`:""}<div class="list">`;
     for(const id of ["choque","tomar","tratar",...A.van]){
       const v=VANT[id]; const cost=id==="choque"&&s.hab?.startsWith("Tensão Aliviada")?5:v.c;
-      const bloq=v.e&&(s.incap||[]).includes(v.e);
-      h+=`<div class="item"><div class="row between"><b>${v.n}</b><span class="chip">${cost?cost+" PT":"varia"}</span></div><p class="small muted">${v.d} <i>Recarga: ${v.r}.</i></p>
-      <button class="btn sm" data-act="vant" data-v="${id}" ${enc||bloq||(cost&&s.pt<cost)?"disabled":""}>${bloq?"Estilo incapacitado":"Usar"}</button></div>`;
+      const bloq=v.e&&(s.incap||[]).includes(v.e); const off=enc||bloq||(cost&&s.pt<cost)||dead;
+      h+=`<button class="line" data-act="vant" data-v="${id}" ${off?"disabled":""} style="text-align:left;${off?"opacity:.45":""}"><div class="grow"><b>${v.n}</b><span>${v.d}</span></div><span class="cost">${cost?cost+" PT":"varia"}</span></button>`;
     }
     h+=`</div></section>`;
+    const ses=S.mesa.sessao||1;
+    h+=`<section class="card"><span class="lbl">Apegos · ganhe PT ao usar na história</span><div class="list">
+     ${apego("item","Item Icônico",s.item,2,s.usos?.item===ses)}${apego("relacao","Relação Afetiva",s.relacao,2,s.usos?.relacao===ses)}${apego("desejo","Desejo Obscuro",s.desejo,3,!!s.usos?.desejo)}</div></section>`;
   }
-  h+=`<section class="card"><h3>Estilos</h3><div class="list">${ESTILOS.map(e=>{const own=A.est.includes(e),inc=(s.incap||[]).includes(e);return `<div class="row between"><span class="${own?"":"muted"}"><b>${e}</b>${own?" · −1 Dificuldade":""}</span>${inc?`<span class="chip dead">Incapacitado</span>`:own?`<span class="chip on">Seu</span>`:""}</div>`}).join("")}</div></section>`;
-  h+=`<section class="card"><h3>Habilidade</h3>${habTxt?`<div class="item"><b>${esc(habTxt[0])}</b><span class="lbl">${esc(habTxt[1])}</span><p class="small">${esc(habTxt[2])}</p></div>`:""}
-   <label class="lbl" for="habsel">Trocar habilidade</label><select id="habsel" data-act-change="hab">${A.hab.map(x=>`<option ${x[0]===s.hab?"selected":""}>${esc(x[0])}</option>`).join("")}</select></section>`;
-  const ses=S.mesa.sessao||1;
-  h+=`<section class="card"><h3>Apegos</h3><div class="list">
-   ${apego("item","Item Icônico",s.item,"+2 PT · 1x por sessão",s.usos?.item===ses)}
-   ${apego("relacao","Relação Afetiva",s.relacao,"+2 PT · 1x por sessão",s.usos?.relacao===ses)}
-   ${apego("desejo","Desejo Obscuro",s.desejo,"+3 PT · só uma vez",!!s.usos?.desejo)}</div></section>`;
-  h+=`<section class="card"><h3>Notas</h3><textarea id="notas" data-live data-save="notas" placeholder="Aparência, recursos, pistas…">${esc(s.notas||"")}</textarea></section>`;
-  h+=`</div>`;
-  return h;
+  if(tb.cur==="eu"){
+    const A=ARQ[s.arq]; const habTxt=A.hab.find(x=>x[0]===s.hab);
+    h+=`<section class="card"><span class="lbl">Estilos · os seus dão −1 de Dificuldade</span><div class="chips">${ESTILOS.map(e=>{const own=A.est.includes(e),inc=(s.incap||[]).includes(e);return `<span class="chip ${own&&!inc?"on":""}" style="${inc?"text-decoration:line-through;opacity:.6":own?"":"opacity:.5"}">${e}</span>`}).join("")}</div></section>
+    <section class="card"><span class="lbl">Habilidade</span>${habTxt?`<b>${esc(habTxt[0])}</b><span class="tiny muted">${esc(habTxt[1])}</span><p class="small">${esc(habTxt[2])}</p>`:""}
+     <select id="habsel" data-act-change="hab" aria-label="Trocar habilidade">${A.hab.map(x=>`<option ${x[0]===s.hab?"selected":""}>${esc(x[0])}</option>`).join("")}</select></section>
+    <section class="card"><span class="lbl">Notas</span><textarea id="notas" data-live data-save="notas" placeholder="Aparência, pistas, recursos…">${esc(s.notas||"")}</textarea></section>
+    <button class="btn ghost" data-act="novaSob">Criar outra Sobrevivente</button>`;
+  }
+  return h+`</div>`;
 }
-function apego(k,n,txt,regra,usado){return `<div class="item"><div class="row between"><b>${n}</b><span class="lbl">${regra}</span></div><p class="small">${esc(txt||"—")}</p><button class="btn sm" data-act="apego" data-k="${k}" ${usado?"disabled":""}>${usado?"Já usado":"Usar e ganhar PT"}</button></div>`}
+function apego(k,n,txt,g,usado){return `<button class="line" data-act="apego" data-k="${k}" ${usado?"disabled":""} style="text-align:left;${usado?"opacity:.45":""}"><div class="grow"><b>${n}</b><span>${esc(txt||"—")}${usado?" · já usado":""}</span></div><span class="cost">+${g}</span></button>`}
 
 function viewCriarSob(){
   const d=S.draft; d.arq=d.arq||"Heroína"; const A=ARQ[d.arq];
   return `<div class="wrap"><form class="card" data-form="sob"><h2>Nova Sobrevivente</h2>
-  <label class="lbl" for="sn">Nome</label><input data-live id="sn" name="nome" required maxlength="30" placeholder="Ex.: Harper">
-  <span class="lbl">Arquétipo</span><div class="arqs">${Object.entries(ARQ).map(([k,a])=>`<button type="button" class="arq ${k===d.arq?"on":""}" data-act="draftArq" data-a="${k}"><b>${k}</b><span class="small muted">${a.est.join(" · ")}</span></button>`).join("")}</div>
-  <p class="small muted">“${A.lema}” — Iniciativa ${A.ini}. Vantagens de estilo: ${A.van.map(v=>VANT[v].n).join(", ")}.</p>
+  <input data-live id="sn" name="nome" required maxlength="30" placeholder="Nome da personagem" aria-label="Nome">
+  <span class="lbl">Arquétipo</span><div class="arqs">${Object.entries(ARQ).map(([k,a])=>`<button type="button" class="arq ${k===d.arq?"on":""}" data-act="draftArq" data-a="${k}"><b>${k}</b><span class="tiny muted">${a.est.join(" · ")}</span></button>`).join("")}</div>
+  <p class="note">“${A.lema}” · age em ${A.ini}º no Encontro</p>
   <label class="lbl" for="sh">Habilidade</label><select id="sh" name="hab">${A.hab.map(x=>`<option>${esc(x[0])}</option>`).join("")}</select>
-  <label class="lbl" for="si">Item Icônico</label><input data-live id="si" name="item" maxlength="60" placeholder="Ex.: Câmera instantânea">
-  <label class="lbl" for="sr">Relação Afetiva</label><input data-live id="sr" name="relacao" maxlength="60" placeholder="Ex.: Irmã mais nova">
-  <label class="lbl" for="sd">Desejo Obscuro (só você vê aqui; revele na hora certa)</label><input data-live id="sd" name="desejo" maxlength="80" placeholder="Ex.: Escondo um crime">
-  <button class="btn primary block">Entrar no Thriller com 6 dados</button></form></div>`;
+  <details><summary>Apegos (opcional)</summary><div class="in">
+  <input data-live id="si" name="item" maxlength="60" placeholder="Item Icônico" aria-label="Item Icônico">
+  <input data-live id="sr" name="relacao" maxlength="60" placeholder="Relação Afetiva" aria-label="Relação Afetiva">
+  <input data-live id="sd" name="desejo" maxlength="80" placeholder="Desejo Obscuro (segredo)" aria-label="Desejo Obscuro"></div></details>
+  <button class="btn primary xl block">Entrar com 6 dados</button></form></div>`;
 }
 
 /* ---------- KILLER ---------- */
 function viewKiller(){
   const k=S.killer; const ctl=souKiller()||souMestre();
-  if(!S.killerLoaded) return `<div class="wrap"><div class="card">Carregando…</div></div>`;
   let h=`<div class="wrap">`;
   if(!souKiller()){
-    h+=`<div class="card"><h3>${S.mesa.killer?`Quem joga de Killer agora: ${esc(nick(S.mesa.killer))}`:"Ninguém está com o monstro"}</h3>
-    <p class="small muted">Todo dado sacrificado vai automaticamente para a pilha do monstro, e quem estiver no assento controla essa pilha.</p>
-    <button class="btn killer block" data-act="assumirKiller">Assumir o monstro</button></div>`;
+    h+=`<section class="card" style="border-color:var(--killer)"><div class="row">${ic("mask")}<b>${S.mesa.killer?`O monstro está com ${esc(nick(S.mesa.killer))}`:"Ninguém está com o monstro"}</b></div>
+    <p class="small muted">Quem estiver com o monstro recebe sozinho todo dado que as Sobreviventes perderem.</p>
+    <button class="btn killer block" data-act="assumirKiller">Assumir o monstro</button></section>`;
     if(!souMestre()) return h+`</div>`;
   }
   if(!k||S.draft.kEdit) return h+viewCriarKiller()+(k?`<button class="btn ghost block" data-act="kCancelEdit">Manter o monstro atual</button>`:"")+`</div>`;
   const st=killerStats(k); const p=pools(); const enc=modo()==="encontro";
   const sustosUsados=(k.sustos&&k.sustos.enc===encId())?k.sustos.n:0;
   const distr=Object.values(S.sobrev).reduce((a,s)=>a+(s.encId===encId()?(s.distr||0):0),0);
-  h+=`<section class="card"><div class="row between"><div><span class="lbl">${esc(k.amP)} · ${esc(k.amS)}</span><h2>${esc(k.nome)}</h2></div><span class="chip k">NB ${st.tot}</span></div>
-   <div class="grid2"><div class="stat"><span class="lbl">Pilha</span><span class="big num">${p.killer}</span></div>
-   <div class="stat"><span class="lbl">Pontos de Horror</span><div class="step"><button data-act="ph" data-d="-1" aria-label="menos PH">−</button><span class="big num">${k.ph}</span><button data-act="ph" data-d="1" aria-label="mais PH">+</button></div></div></div>
-   <p class="small muted">Dados sacrificados pelas Sobreviventes até agora: <b class="num">${p.sac}</b>. Eles entram sozinhos na sua pilha.</p>
-   <div class="grid3"><div class="stat"><span class="lbl">Fuga</span><b>${fugaAlvo()}</b></div><div class="stat"><span class="lbl">Sustos</span><b>${sustosUsados}/${st.sustos}</b></div><div class="stat"><span class="lbl">Armadilhas</span><b>${st.armad}</b></div><div class="stat"><span class="lbl">Passos</span><b>${st.passos}</b></div><div class="stat"><span class="lbl">Distrações</span><b>${distr}</b></div><div class="stat"><span class="lbl">Rodada</span><b>${enc?S.mesa.enc?.rodada||1:"—"}</b></div></div>
-   <div class="item"><span class="lbl">Estigma</span><p class="small">${esc(st.est)}</p></div></section>`;
+  h+=`<section class="card" style="border-color:var(--killer)">
+   <div class="who"><div><h2>${esc(k.nome)}</h2><span class="tiny muted">${esc(k.amP)} + ${esc(k.amS)}</span></div><span class="pill k">NB ${st.tot}</span></div>
+   <div class="stats" style="grid-template-columns:1fr 1fr">
+    <div class="st"><span class="lbl">Dados</span><span class="v" style="font-size:48px;color:#e6d8fa">${p.killer}</span><span class="tiny muted">${p.sac} vieram das vítimas</span></div>
+    <div class="st"><span class="lbl">Horror (PH)</span><div class="row between"><span class="v" style="font-size:48px;color:#e6d8fa">${k.ph}</span><div class="list" style="gap:4px"><button class="btn sm" data-act="ph" data-d="1" aria-label="mais PH">+</button><button class="btn sm" data-act="ph" data-d="-1" aria-label="menos PH">−</button></div></div></div>
+   </div>
+   <div class="row"><span class="pill">Fuga ${fugaAlvo()}</span><span class="pill">Sustos ${sustosUsados}/${st.sustos}</span>${distr?`<span class="pill w">Distraído ×${distr}</span>`:""}</div>
+  </section>`;
   if(!ctl) return h+`</div>`;
-  h+=`<section class="card"><h3>Ações gerais</h3><div class="grid2">
-   <button class="btn killer" data-act="kAssustar" ${sustosUsados>=st.sustos?"disabled":""}>Assustar</button>
-   <button class="btn killer" data-act="kAlvo" data-a="ferir" ${p.killer<1?"disabled":""}>Ferir</button>
-   <button class="btn killer" data-act="kAlvo" data-a="matar" ${!enc?"disabled":""}>Matar</button>
-   <button class="btn killer" data-act="kDificultar" ${!enc||k.ph<4?"disabled":""}>Dificultar (4 PH)</button>
-   <button class="btn killer" data-act="kEscapar" ${!enc?"disabled":""}>Escapar</button>
-   <button class="btn" data-act="kDado" data-d="1">+1 dado</button></div>
-   <p class="small muted">Ferir rola um dado da sua pilha: 6 mata (ou Mutila), 1–5 vira Ferida e Sequela. Matar custa 2 dados${distr?` + ${distr} dado(s) e ${3*distr} PH pelas Distrações`:""} e só pega quem tem menos dados que você.</p></section>`;
-  h+=`<section class="card"><h3>Ações únicas</h3><div class="list">${(k.acoes||[]).map(a=>{const A=ACOES_U[a];return `<div class="item"><div class="row between"><b>${a}</b><span class="chip k">${A.c?A.c+" PH":"sem custo"}</span></div><span class="lbl">${A.cena}</span><p class="small">${A.d}</p><button class="btn sm killer" data-act="kUnica" data-a="${a}" ${A.c>k.ph?"disabled":""}>Usar</button></div>`}).join("")}</div></section>`;
-  const ap=APAVOROS[k.apavoro];
-  if(ap) h+=`<section class="card"><h3>Apavoro</h3><div class="item"><div class="row between"><b>${esc(k.apavoro)}</b><span class="chip k">${ap[0]} PH</span></div><span class="lbl">${ap[1]} · Recarga: ${ap[2]}</span><p class="small">${ap[3]}</p><button class="btn sm killer" data-act="kApavoro" ${ap[0]>k.ph?"disabled":""}>Ativar</button></div></section>`;
-  h+=`<section class="card"><h3>Intentos (ganhar PH)</h3><div class="list">${[...st.ints.map(i=>[i[0]+" ("+i[2]+")",i[1]]),...INTENTOS].map((x,i)=>`<button class="btn sm" style="justify-content:space-between" data-act="kIntento" data-i="${i}"><span style="text-align:left">${esc(x[0])}</span><b class="num">+${x[1]}</b></button>`).join("")}</div></section>`;
-  h+=`<section class="card"><h3>Vítimas</h3><div class="list">${survRows(true)}</div></section>`;
-  h+=`<section class="card"><h3>Notas do Killer</h3><textarea id="knotas" data-live data-save="knotas" placeholder="Aparência, planos, armadilhas…">${esc(k.notas||"")}</textarea>
-   <button class="btn sm ghost" data-act="kRefazer">Trocar de monstro</button></section></div>`;
-  return h;
+  const tb=sub("killer",[["acoes","Ações"],["ph","Ganhar PH"],["ficha","Ficha"]]); h+=tb.html;
+  if(tb.cur==="acoes"){
+    h+=`<section class="card"><div class="acts">
+     <button class="act k ${enc?"go":""}" data-act="kAlvo" data-a="ferir" ${p.killer<1?"disabled":""}>${ic("knife")}<b>Ferir</b><span>Gasta 1 dado · 6 mata</span></button>
+     <button class="act k" data-act="kAlvo" data-a="matar" ${!enc?"disabled":""}>${ic("skull")}<b>Matar</b><span>${2+distr} dados${distr?` + ${3*distr} PH`:""} · só no Encontro</span></button>
+     <button class="act k" data-act="kAssustar" ${sustosUsados>=st.sustos?"disabled":""}>${ic("scare")}<b>Assustar</b><span>Todos rolam Susto</span></button>
+     <button class="act k" data-act="kDificultar" ${!enc||k.ph<4?"disabled":""}>${ic("wall")}<b>Dificultar</b><span>4 PH · Fuga +1</span></button>
+     <button class="act k" data-act="kEscapar" ${!enc?"disabled":""}>${ic("door")}<b>Escapar</b><span>Encerra o Encontro · +1 dado</span></button>
+     <button class="act k" data-act="kDado" data-d="1">${ic("plus")}<b>+1 dado</b><span>Ajuste manual</span></button>
+    </div></section>`;
+    h+=`<section class="card"><span class="lbl">Ações únicas e Apavoro</span><div class="list">${(k.acoes||[]).map(a=>{const A=ACOES_U[a];return `<button class="line" data-act="kUnica" data-a="${a}" ${A.c>k.ph?"disabled":""} style="text-align:left;${A.c>k.ph?"opacity:.45":""}"><div class="grow"><b>${a}</b><span>${A.d}</span></div><span class="cost k">${A.c?A.c+" PH":"grátis"}</span></button>`}).join("")}
+     ${APAVOROS[k.apavoro]?(()=>{const ap=APAVOROS[k.apavoro];return `<button class="line" data-act="kApavoro" ${ap[0]>k.ph?"disabled":""} style="text-align:left;border-color:var(--killer);${ap[0]>k.ph?"opacity:.45":""}"><div class="grow"><b>${ic("star","")} ${esc(k.apavoro)}</b><span>${ap[3]}</span></div><span class="cost k">${ap[0]} PH</span></button>`})():""}</div></section>`;
+    h+=`<section class="card"><span class="lbl">Vítimas</span><div class="list">${survRows(true)}</div></section>`;
+  }
+  if(tb.cur==="ph"){
+    h+=`<section class="card"><p class="small muted">Toque quando acontecer na mesa.</p><div class="list">${[...st.ints.map(i=>[i[0],i[1],1]),...INTENTOS].map((x,i)=>`<button class="line" data-act="kIntento" data-i="${i}" style="text-align:left;${x[2]?"border-color:var(--killer)":""}"><div class="grow"><b>${esc(x[0])}</b>${x[2]?`<span>Intento único</span>`:""}</div><span class="cost k">+${x[1]}</span></button>`).join("")}</div></section>`;
+  }
+  if(tb.cur==="ficha"){
+    h+=`<section class="card"><div class="stats"><div class="st"><span class="lbl">Fuga</span><span class="v">${st.fuga}</span></div><div class="st"><span class="lbl">Sustos</span><span class="v">${st.sustos}</span></div><div class="st"><span class="lbl">Armadilhas</span><span class="v">${st.armad}</span></div><div class="st"><span class="lbl">Passos</span><span class="v">${st.passos}</span></div><div class="st"><span class="lbl">Dados ini.</span><span class="v">${st.dados}</span></div><div class="st"><span class="lbl">PH ini.</span><span class="v">${st.ph}</span></div></div>
+     <span class="lbl">Estigma</span><p class="small">${esc(st.est)}</p></section>
+     <section class="card"><span class="lbl">Notas</span><textarea id="knotas" data-live data-save="knotas" placeholder="Aparência, planos, armadilhas…">${esc(k.notas||"")}</textarea></section>
+     <button class="btn ghost" data-act="kRefazer">Trocar de monstro</button>`;
+  }
+  return h+`</div>`;
 }
 function viewCriarKiller(){
   const d=S.draft.k||(S.draft.k={amP:"Brutamontes",amS:"Carniceiro",acoes:["Imobilizar","Incapacitar"],apavoro:"Sinto Cheiro de Sangue!",nome:""});
   const st=killerStats(d)||{};
   const opts=(sel,list)=>list.map(x=>`<option ${x===sel?"selected":""}>${esc(x)}</option>`).join("");
   const am=Object.keys(AMEACAS);
-  return `<section class="card"><h2>Monte o monstro</h2><span class="lbl">Prontos do livro</span>
-  <div class="list">${Object.entries(PRONTOS).map(([n,x])=>`<button class="btn sm" style="justify-content:space-between" data-act="kPronto" data-n="${esc(n)}"><b>${esc(n)}</b><span class="small muted">${x[0]} · ${x[1]}</span></button>`).join("")}</div>
-  <hr><span class="lbl">Ou crie o seu</span>
-  <label class="lbl" for="kn">Nome</label><input id="kn" data-live data-kd="nome" value="${esc(d.nome)}" maxlength="30" placeholder="Ex.: O Bruto">
-  <div class="grid2"><div><label class="lbl" for="kp">Ameaça Primária</label><select id="kp" data-kd="amP">${opts(d.amP,am)}</select></div>
-  <div><label class="lbl" for="ks">Secundária</label><select id="ks" data-kd="amS">${opts(d.amS,am)}</select></div></div>
-  <div class="grid2"><div><label class="lbl" for="ka1">Ação única (${esc(d.amP)})</label><select id="ka1" data-kd="a0">${opts(d.acoes[0],AMEACAS[d.amP].ac)}</select></div>
-  <div><label class="lbl" for="ka2">Ação única (${esc(d.amS)})</label><select id="ka2" data-kd="a1">${opts(d.acoes[1],AMEACAS[d.amS].ac)}</select></div></div>
-  <label class="lbl" for="kap">Apavoro</label><select id="kap" data-kd="apavoro">${opts(d.apavoro,Object.keys(APAVOROS))}</select>
-  <div class="grid3"><div class="stat"><span class="lbl">Dados</span><b>${st.dados}</b></div><div class="stat"><span class="lbl">PH</span><b>${st.ph}</b></div><div class="stat"><span class="lbl">Fuga</span><b>${st.fuga}</b></div><div class="stat"><span class="lbl">Sustos</span><b>${st.sustos}</b></div><div class="stat"><span class="lbl">Armadilhas</span><b>${st.armad}</b></div><div class="stat"><span class="lbl">Passos</span><b>${st.passos}</b></div></div>
-  <p class="small muted">Estigma: ${esc(st.est)}</p>
-  <button class="btn killer block" data-act="kCriar">Soltar o monstro</button></section>`;
+  return `<section class="card"><h2>Escolha o monstro</h2><div class="list">${Object.entries(PRONTOS).map(([n,x])=>`<button class="line" data-act="kPronto" data-n="${esc(n)}" style="text-align:left;${d.nome===n?"border-color:var(--killer);background:var(--killer-bg)":""}"><div class="grow"><b>${esc(n)}</b><span>${x[0]} + ${x[1]}</span></div><span class="cost k">${AMEACAS[x[0]].nb+AMEACAS[x[1]].nb} dados</span></button>`).join("")}</div></section>
+  <details><summary>Criar o meu</summary><div class="in">
+  <input id="kn" data-live data-kd="nome" value="${esc(d.nome)}" maxlength="30" placeholder="Nome do monstro" aria-label="Nome do monstro">
+  <label class="lbl" for="kp">Ameaça principal</label><select id="kp" data-kd="amP">${opts(d.amP,am)}</select>
+  <label class="lbl" for="ks">Ameaça secundária</label><select id="ks" data-kd="amS">${opts(d.amS,am)}</select>
+  <label class="lbl" for="ka1">Ação única de ${esc(d.amP)}</label><select id="ka1" data-kd="a0">${opts(d.acoes[0],AMEACAS[d.amP].ac)}</select>
+  <label class="lbl" for="ka2">Ação única de ${esc(d.amS)}</label><select id="ka2" data-kd="a1">${opts(d.acoes[1],AMEACAS[d.amS].ac)}</select>
+  <label class="lbl" for="kap">Apavoro</label><select id="kap" data-kd="apavoro">${opts(d.apavoro,Object.keys(APAVOROS))}</select></div></details>
+  <section class="card" style="border-color:var(--killer)"><div class="who"><div><h3>${esc(d.nome||"Sem nome")}</h3><span class="tiny muted">${esc(d.amP)} + ${esc(d.amS)}</span></div></div>
+  <div class="stats"><div class="st"><span class="lbl">Dados</span><span class="v">${st.dados}</span></div><div class="st"><span class="lbl">PH</span><span class="v">${st.ph}</span></div><div class="st"><span class="lbl">Fuga</span><span class="v">${st.fuga}</span></div></div>
+  <p class="small muted">${esc(st.est)}</p>
+  <button class="btn killer xl block" data-act="kCriar">Soltar o monstro</button></section>`;
 }
 function survRows(killerView){
   const list=Object.entries(S.sobrev).sort((a,b)=>(ARQ[a[1].arq]?.ini||9)-(ARQ[b[1].arq]?.ini||9));
-  if(!list.length) return `<p class="small muted">Nenhuma Sobrevivente na mesa ainda. Passe o código <b class="num">${esc(S.code)}</b>.</p>`;
-  const kp=pools().killer;
+  if(!list.length) return `<p class="small muted">Ninguém na mesa ainda. Mande o código <b class="num">${esc(S.code)}</b>.</p>`;
+  const kp=pools().killer; const enc=modo()==="encontro";
   return list.map(([u,s])=>{
     const dead=s.status==="morto",e=escapou(s);
-    const marcs=Object.entries(s.marc||{}).filter(([k,v])=>v>0).map(([k,v])=>`<span class="chip w">${MARC_N[k]} ${v}</span>`).join("");
-    return `<div class="item"><div class="surv"><div style="min-width:0"><b class="${dead?"pill-dead":""}">${esc(s.nome)}</b> <span class="small muted">${esc(s.arq)} · ${esc(s.apelido||nick(u))}</span></div>
-     ${dead?`<span class="chip dead">Morta</span>`:e?`<span class="chip f">Escapou</span>`:killerView&&s.pilha<kp&&modo()==="encontro"?`<span class="chip on">Matável</span>`:`<span class="chip">Viva</span>`}</div>
-     <div class="row small"><span class="chip">Dados <b class="num">${s.pilha}</b></span>${modo()==="encontro"?`<span class="chip f">Fuga ${s.fuga||0}/${fugaAlvo()}</span>`:""}<span class="chip">Ferida ${s.ferida}</span><span class="chip">Sequela ${s.sequela}</span><span class="chip">PT ${s.pt}</span>${marcs}</div>
-     ${souMestre()?`<button class="btn sm" data-act="editSob" data-u="${u}">Ajustar</button>`:""}</div>`}).join("");
+    const tag=dead?`<span class="pill dead">${ic("skull")}</span>`:e?`<span class="pill f">Fugiu</span>`:killerView&&enc&&s.pilha<kp?`<span class="pill r">Matável</span>`:"";
+    const inner=`<div class="grow"><b class="${dead?"dead-name":""}">${esc(s.nome)}</b><span>${esc(s.arq)} · ${esc(s.apelido||nick(u))}</span><div class="row" style="gap:6px;margin-top:4px">${mini(s.pilha)}${enc&&!dead?`<span class="tiny" style="color:var(--fuga)">fuga ${s.fuga||0}/${fugaAlvo()}</span>`:""}${s.ferida?`<span class="tiny" style="color:#ff6b7f">ferida ${s.ferida}</span>`:""}${s.sequela?`<span class="tiny" style="color:#e09a6a">seq ${s.sequela}</span>`:""}<span class="tiny" style="color:var(--pt)">${s.pt} PT</span></div></div>${tag}`;
+    return souMestre()?`<button class="line" data-act="editSob" data-u="${u}" style="text-align:left">${inner}</button>`:`<div class="line">${inner}</div>`}).join("");
 }
 
 /* ---------- MESTRE ---------- */
 function viewMestre(){
-  if(!souMestre()) return `<div class="wrap"><div class="card"><p>Só o Mestre da mesa (${esc(nick(S.mesa.mestre))}) usa este lobby.</p></div></div>`;
-  const m=S.mesa,p=pools();
+  if(!souMestre()) return `<div class="wrap"><div class="card"><p>Só o Mestre da mesa (${esc(nick(S.mesa.mestre))}) usa esta tela.</p></div></div>`;
+  const m=S.mesa,p=pools(),md=modo();
   const membros=Object.entries(S.membros);
-  let h=`<div class="wrap"><section class="card"><h3>Cena</h3><div class="seg">${["livre","suspense","encontro"].map(x=>`<button data-act="modo" data-m="${x}" class="${modo()===x?"on":""}">${{livre:"Livre",suspense:"Suspense",encontro:"Encontro"}[x]}</button>`).join("")}</div>
-   <p class="small muted">Em Livre e Suspense, toda falha é sacrificada e vai direto para quem está com o monstro. No Encontro, falhas vão para o Descarte.</p>
-   ${modo()==="encontro"?`<div class="row"><button class="btn sm" data-act="rodada">Próxima rodada</button><span class="small muted">Rodada ${m.enc?.rodada||1}</span></div>`:
-   `<p class="small">${vivos().some(([u,s])=>s.pilha<p.killer)?"<b>O Killer já pode iniciar um Encontro</b> (tem mais dados que alguém).":"O Killer ainda não tem mais dados que nenhuma Sobrevivente."}</p>`}
-   <div class="grid2"><button class="btn" data-act="mSusto">Pedir Teste de Susto</button><button class="btn" data-act="sessao">Nova sessão</button></div></section>
-   <section class="card"><h3>Assento do monstro</h3><p class="small">Agora: <b>${m.killer?esc(nick(m.killer)):"vago"}</b>. Dados sacrificados vão para esse assento.</p>
-   <label class="lbl" for="ksel">Passar o monstro para</label><select id="ksel" data-act-change="setKiller"><option value="">— vago —</option>${membros.map(([u,x])=>`<option value="${u}" ${m.killer===u?"selected":""}>${esc(x.apelido)}${u===S.uid?" (você)":""}</option>`).join("")}</select></section>
-   <section class="card"><h3>Pilhas</h3>
-   <div class="row between"><span>Descarte <b class="num">${p.descarte}</b></span><div class="step"><button data-act="adj" data-f="descAjuste" data-d="-1" aria-label="tirar do descarte">−</button><button data-act="adj" data-f="descAjuste" data-d="1" aria-label="pôr no descarte">+</button></div></div>
-   <div class="row between"><span>Pilha do Killer <b class="num">${p.killer}</b></span><div class="step"><button data-act="adj" data-f="killerAjuste" data-d="-1" aria-label="tirar dado do killer">−</button><button data-act="adj" data-f="killerAjuste" data-d="1" aria-label="dar dado ao killer">+</button></div></div></section>
-   <section class="card"><h3>Sobreviventes</h3><div class="list">${survRows(true)}</div></section>
-   <section class="card"><h3>Desafios (dar PT)</h3><label class="lbl" for="dsel">Para quem</label><select id="dsel">${Object.entries(S.sobrev).filter(([u,s])=>s.status!=="morto").map(([u,s])=>`<option value="${u}">${esc(s.nome)}</option>`).join("")}</select>
-   <div class="list">${DESAFIOS.map((d,i)=>`<button class="btn sm" style="justify-content:space-between" data-act="desafio" data-i="${i}"><span style="text-align:left">${esc(d[0])}</span><b class="num">+${d[1]}</b></button>`).join("")}</div></section>
-   <section class="card"><h3>Membros</h3><div class="list">${membros.map(([u,x])=>`<div class="row between"><span>${esc(x.apelido)}${u===S.uid?" (você)":""}</span><span class="chip ${x.papel==="killer"?"k":""}">${x.papel}${m.killer===u?" · monstro":""}${m.mestre===u?" · mestre":""}</span></div>`).join("")}</div></section></div>`;
+  const podeEnc=vivos().some(([u,s])=>s.pilha<p.killer);
+  let h=`<div class="wrap"><section class="card"><span class="lbl">Cena atual</span><div class="acts" style="grid-template-columns:repeat(3,1fr)">
+   ${[["livre","Livre","table"],["suspense","Suspense","eye"],["encontro","Encontro","knife"]].map(([k,n,i])=>`<button class="act ${md===k?"go":""}" data-act="modo" data-m="${k}" style="min-height:76px;align-items:center;text-align:center">${ic(i)}<b>${n}</b></button>`).join("")}</div>
+   ${md==="encontro"?`<button class="btn block" data-act="rodada">Próxima rodada (agora R${m.enc?.rodada||1})</button>`:`<p class="note">${podeEnc?"<b style='color:var(--bone)'>O Killer já pode atacar:</b> tem mais dados que alguém.":"O Killer ainda não tem mais dados que nenhuma Sobrevivente."}</p>`}
+   <div class="acts"><button class="act" data-act="mSusto">${ic("scare")}<b>Pedir Susto</b><span>Todos rolam 1 dado</span></button><button class="act" data-act="sessao">${ic("star")}<b>Nova sessão</b><span>Libera apegos e usos</span></button></div></section>
+   <section class="card"><span class="lbl">Sobreviventes · toque para ajustar</span><div class="list">${survRows(true)}</div></section>
+   <details><summary>Dar PT por desafio</summary><div class="in"><select id="dsel" aria-label="Para quem">${Object.entries(S.sobrev).filter(([u,s])=>s.status!=="morto").map(([u,s])=>`<option value="${u}">${esc(s.nome)}</option>`).join("")}</select>
+    <div class="list">${DESAFIOS.map((d,i)=>`<button class="line" data-act="desafio" data-i="${i}" style="text-align:left"><div class="grow"><b>${esc(d[0])}</b></div><span class="cost">+${d[1]}</span></button>`).join("")}</div></div></details>
+   <details><summary>Quem está com o monstro: ${m.killer?esc(nick(m.killer)):"ninguém"}</summary><div class="in"><select id="ksel" data-act-change="setKiller" aria-label="Passar o monstro"><option value="">— ninguém —</option>${membros.map(([u,x])=>`<option value="${u}" ${m.killer===u?"selected":""}>${esc(x.apelido)}${u===S.uid?" (você)":""}</option>`).join("")}</select><p class="tiny muted">Dados perdidos vão sempre para quem estiver aqui.</p></div></details>
+   <details><summary>Ajustar pilhas</summary><div class="in">
+    <div class="line"><div class="grow"><b>Descarte</b><span>${p.descarte} dados</span></div><div class="step"><button data-act="adj" data-f="descAjuste" data-d="-1" aria-label="tirar">−</button><button data-act="adj" data-f="descAjuste" data-d="1" aria-label="pôr">+</button></div></div>
+    <div class="line"><div class="grow"><b>Killer</b><span>${p.killer} dados</span></div><div class="step"><button data-act="adj" data-f="killerAjuste" data-d="-1" aria-label="tirar">−</button><button data-act="adj" data-f="killerAjuste" data-d="1" aria-label="pôr">+</button></div></div></div></details>
+  </div>`;
   return h;
 }
 
 /* ---------- MESA ---------- */
 function viewMesa(){
-  return `<div class="wrap"><section class="card"><h3>Mesa ${esc(S.code)}</h3><p class="small">Mestre: <b>${esc(nick(S.mesa.mestre))}</b> · Monstro: <b>${S.mesa.killer?esc(nick(S.mesa.killer)):"vago"}</b></p>
-  ${NET.role==="host"?`<div class="banner"><p class="small"><b>Este aparelho é o host.</b> Não feche esta página durante o jogo. ${NET.conns.filter(c=>c.open).length} aparelho(s) conectado(s).</p></div>`:""}
-  <div class="row"><button class="btn sm primary" data-act="convite">Copiar convite</button><button class="btn sm" data-act="copiar">Copiar código</button><button class="btn sm" data-act="trocarLobby">Trocar de lobby</button><button class="btn sm ghost" data-act="sair">Sair da mesa</button></div></section>
-  ${modo()==="encontro"?`<section class="card"><h3>Iniciativa</h3><div class="list">${Object.entries(S.sobrev).sort((a,b)=>ARQ[a[1].arq].ini-ARQ[b[1].arq].ini).map(([u,s])=>`<div class="row between"><span class="${s.status==="morto"?"pill-dead":""}">${ARQ[s.arq].ini}. ${esc(s.nome)} <span class="muted small">${esc(s.arq)}</span></span>${escapou(s)?`<span class="chip f">fora</span>`:""}</div>`).join("")}<div class="row between"><span>9. ${esc(S.killer?.nome||"O Assassino")}</span></div></div></section>`:""}
-  <section class="card"><h3>Sobreviventes</h3><div class="list">${survRows(false)}</div></section>
-  <section class="card"><h3>Registro</h3><div class="log">${S.log.map(l=>`<div class="${esc(l.k)}">${esc(l.txt)}</div>`).join("")||`<span class="muted small">Nada aconteceu… ainda.</span>`}</div></section></div>`;
+  const host=NET.role==="host";
+  return `<div class="wrap"><section class="card"><span class="lbl">Código da mesa</span><span class="code">${esc(S.code)}</span>
+   <button class="btn primary block" data-act="convite">${ic("copy")} Copiar convite para o grupo</button>
+   ${host?`<p class="note">Este aparelho é o host: deixe esta página aberta. ${NET.conns.filter(c=>c.open).length} conectado(s).</p>`:""}
+   <p class="tiny muted">Mestre: <b>${esc(nick(S.mesa.mestre))}</b> · Monstro: <b>${S.mesa.killer?esc(nick(S.mesa.killer)):"ninguém"}</b></p></section>
+  ${modo()==="encontro"?`<section class="card"><span class="lbl">Ordem do Encontro</span><div class="list">${Object.entries(S.sobrev).sort((a,b)=>ARQ[a[1].arq].ini-ARQ[b[1].arq].ini).map(([u,s])=>`<div class="row between"><span class="${s.status==="morto"?"dead-name":""}"><b class="num">${ARQ[s.arq].ini}</b> ${esc(s.nome)}</span>${escapou(s)?`<span class="pill f">fugiu</span>`:""}</div>`).join("")}<div class="row"><b class="num">9</b> ${esc(S.killer?.nome||"O Assassino")}</div></div></section>`:""}
+  <section class="card"><span class="lbl">Sobreviventes</span><div class="list">${survRows(false)}</div></section>
+  <section class="card"><span class="lbl">O que aconteceu</span><div class="log">${S.log.map(l=>`<div class="${esc(l.k)}">${esc(l.txt)}</div>`).join("")||`<span class="muted small">Nada… ainda.</span>`}</div></section>
+  <div class="row"><button class="btn sm" data-act="trocarLobby">Trocar de papel</button><button class="btn sm ghost" data-act="sair">Sair da mesa</button></div></div>`;
 }
 
 /* ---------- REGRAS ---------- */
 function viewRegras(){
   const R=[
-   ["Testes","Diga quantos dados da Pilha Comum arrisca e role todos. Dificuldade padrão 4: cada dado ≥ Dificuldade é sucesso. Usar um dos seus Estilos ou um Recurso reduz 1. Comum pede 1 sucesso; Complexo pede 2 sucessos ou um 6. Cada sucesso a mais dá 1 PT."],
-   ["Perdendo dados","Falhas sempre saem da pilha. Em Cena Livre e Suspense são SACRIFICADAS (vão para o Killer). No Encontro e no Teste de Susto são DESCARTADAS (vão para o Descarte). Recuperar dado = puxar do Descarte. Máximo 6 na Pilha Comum."],
-   ["Teste de Susto","Role 1 dado. Falhou, ele vai para o Descarte."],
-   ["Pontos de Tensão","Começa com 0, máximo 10. Ganha com Desafios, apegos e sucessos extras. Compra Vantagens fora do Encontro."],
-   ["Encontro","Começa quando o Killer tem mais dados que alguém. Quem começa com 0 dados morre (Morte Súbita). Iniciativa fixa por Arquétipo; o Killer age por último. Para escapar, complete a Pilha de Fuga (maior NB + 1). No fim, a Fuga volta para a Pilha Comum."],
-   ["Manobras","Vazar Dali (Ligeiro): sucessos vão para a Fuga; cada 6 puxa +1 dado. Partir pra Cima (Potente): 1 sucesso faz o Killer descartar 1 dado. Distrair (Desenrolado, Complexo): Matar passa a custar +1 dado e 3 PH. Ajudar Alguém: sucessos viram dados de outra; falhas não se perdem. Recuperar Fôlego: +1 dado do Descarte. Arriscar Tudo: descarte todos os seus dados e alguém escapa (1x por sessão)."],
-   ["Ferida e Sequela","Ferir: 6 mata; 1–5 vira Ferida (soma) e +1 Sequela. Ferida 6 mata. Sequelas vão até 5 e definem o mínimo de Ferida ao tratar."],
-   ["Encerrando o Encontro","Killer Escapa (+1 dado), Killer fica sem dados, todas escapam, ou todas morrem."],
-   ["Assassino","NB total = dados iniciais. NB da Primária = PH iniciais. Maior NB + 1 = Pilha de Fuga. 4 − maior NB = Passos. 7 − NB total = Sustos por Encontro e Armadilhas iniciais."]
+   ["Como rolar","Escolha quantos dados arriscar. Cada dado com 4 ou mais é sucesso. Um Estilo seu ou um Recurso baixa a meta em 1. Teste Complexo pede 2 sucessos ou um 6. Cada sucesso a mais dá 1 PT."],
+   ["Para onde vão as falhas","Cena Livre e Suspense: para o Killer. Encontro e Susto: para o Descarte. Recuperar um dado é puxar do Descarte. Máximo de 6 na sua pilha."],
+   ["Teste de Susto","Role 1 dado. Falhou, perdeu ele."],
+   ["Pontos de Tensão","Começa com 0, máximo 10. Ganhe em desafios, apegos e sucessos extras. Gaste em Vantagens fora do Encontro."],
+   ["Encontro","O Killer pode atacar quando tem mais dados que alguém. Quem entra com 0 dados morre. Ordem fixa por arquétipo; o Killer age por último. Encha a Pilha de Fuga para escapar."],
+   ["Manobras","Vazar Dali: sucessos vão para a Fuga, cada 6 puxa +1. Partir pra Cima: 1 sucesso tira 1 dado do Killer. Distrair (Complexo): Matar custa +1 dado e 3 PH. Ajudar: seus sucessos viram dados de outra. Fôlego: +1 dado do Descarte. Arriscar Tudo: perde todos os dados e alguém escapa (1x por sessão)."],
+   ["Ferida e Sequela","Ferir: 6 mata; 1 a 5 vira Ferida (soma) e +1 Sequela. Ferida 6 mata. Sequela vai até 5 e é o mínimo de Ferida ao tratar."],
+   ["Fim do Encontro","Killer Escapa (+1 dado), Killer sem dados, todas fugiram ou todas morreram."],
+   ["Montando o Killer","Soma dos NB = dados iniciais. NB da principal = PH iniciais. Maior NB + 1 = Fuga. 7 − NB total = Sustos e Armadilhas."]
   ];
-  return `<div class="wrap"><section class="card"><h2>Regras rápidas</h2><div class="list">${R.map(r=>`<details><summary>${r[0]}</summary><p class="small">${r[1]}</p></details>`).join("")}</div></section>
-  <section class="card"><h3>Estilos</h3><div class="kv">${ESTILOS.map(e=>`<b>${e}</b><span class="small">${ESTILO_DESC[e]}</span>`).join("")}</div></section></div>`;
+  return `<div class="wrap"><h2>Regras rápidas</h2>${R.map(r=>`<details><summary>${r[0]}</summary><div class="in"><p class="small">${r[1]}</p></div></details>`).join("")}
+  <details><summary>Estilos</summary><div class="in">${ESTILOS.map(e=>`<p class="small"><b>${e}:</b> ${ESTILO_DESC[e]}</p>`).join("")}</div></details></div>`;
 }
 
 /* ============ SHEETS ============ */
@@ -685,83 +812,90 @@ function openSheet(o){S.sheet=o;renderSheet()}
 function closeSheet(){S.sheet=null;renderSheet()}
 function renderSheet(){
   const el=$("#sheet"); const o=S.sheet;
-  if(!o){el.innerHTML="";return}
+  if(!o){el.innerHTML="";document.body.style.overflow="";return}
   if(el.contains(document.activeElement)&&document.activeElement.tagName==="INPUT") return;
+  const sc=el.querySelector(".sheet")?.scrollTop||0;
   el.innerHTML=`<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true">${sheetBody(o)}</div></div>`;
+  document.body.style.overflow="hidden";
+  const sh=el.querySelector(".sheet"); if(sh) sh.scrollTop=sc;
 }
+const NOMES={teste:"Teste",vazar:"Vazar Dali",partir:"Partir pra Cima",distrair:"Distrair",ajudar:"Ajudar Alguém"};
 function sheetBody(o){
   const s=me();
   if(o.kind==="roll"){
     const r=o.res;
-    const nomes={teste:"Teste",vazar:"Vazar Dali",partir:"Partir pra Cima",distrair:"Distrair",ajudar:"Ajudar Alguém"};
-    if(r) return `<h2>${nomes[o.tipo]}</h2><div class="row">${r.dice.map((v,i)=>dieHTML(v,(v>=r.diff?(v===6?"six":""):"fail")+" anim")).join("")}</div>
-      <p><b>${r.ok?"Sucesso":"Falhou"}</b> · ${r.succ} sucesso(s) com Dificuldade ${r.diff}${r.cx?" (Complexo)":""}.</p><div class="list small">${r.msgs.map(m=>`<div>• ${m}</div>`).join("")}</div>
-      <button class="btn primary block" data-act="closeSheet">Ok</button>`;
+    if(r) return `<span class="lbl">${NOMES[o.tipo]}</span><div class="verdict ${r.ok?"ok":"no"}">${r.ok?"Sucesso":"Falhou"}</div>
+      <div class="dice">${r.dice.map((v,i)=>dieHTML(v,(v>=r.diff?(v===6?"six":""):"fail")+" anim").replace('class="d','style="animation-delay:'+(i*60)+'ms" class="d')).join("")}</div>
+      <p class="small muted">${r.succ} sucesso(s) · precisava de ${r.diff}+${r.cx?" · Complexo":""}</p>
+      <div class="conseq">${r.msgs.map(m=>`<div><span>${m}</span></div>`).join("")}</div>
+      <button class="btn primary xl block" data-act="closeSheet">Ok</button>`;
     const A=ARQ[s.arq]; const outros=vivos().filter(([u])=>u!==S.uid);
-    const est=o.estilo; const own=A.est.includes(est)&&!(s.incap||[]).includes(est);
     const dif=calcDif(o);
-    return `<h2>${nomes[o.tipo]}</h2>
-     <span class="lbl">Estilo</span><div class="row">${["",...ESTILOS].map(e=>`<button class="chip ${o.estilo===e?"on":""}" data-act="rs" data-k="estilo" data-v="${e}">${e||"Nenhum"}${A.est.includes(e)?" ★":""}</button>`).join("")}</div>
-     ${o.tipo==="teste"?`<div class="row"><button class="chip ${o.cx?"on":""}" data-act="rs" data-k="cx" data-v="${o.cx?"":"1"}">Teste Complexo</button></div>`:""}
-     <div class="row"><button class="chip ${o.rec?"on":""}" data-act="rs" data-k="rec" data-v="${o.rec?"":"1"}" ${(s.recursos||0)<1?"disabled":""}>Usar Recurso (−1) · ${s.recursos||0}</button></div>
+    const picks=Array.from({length:s.pilha},(_,i)=>`<button class="d lg pick ${i<o.n?"sel":"fail"}" data-act="rs" data-k="n" data-v="${i+1}" aria-label="${i+1} dados">${dieFace(6).replace(/^<span class="d ">|<\/span>$/g,"")}</button>`).join("");
+    const ordem=[...A.est,...ESTILOS.filter(e=>!A.est.includes(e))];
+    return `<div class="row between"><h2>${NOMES[o.tipo]}</h2><button class="btn ghost sm" data-act="closeSheet">Fechar</button></div>
+     <div class="target"><span class="n">${dif.d}+</span><div><b>${dif.cx?"Teste Complexo":"Teste Comum"}</b><br><span class="tiny muted">${dif.cx?"Precisa de 2 sucessos ou um 6":"Precisa de 1 sucesso"}${dif.notes.length?" · "+dif.notes.join(" · "):""}</span></div></div>
+     <span class="lbl">Quantos dados arriscar? Toque para escolher</span><div class="dice">${picks}</div>
      ${o.tipo==="ajudar"?`<label class="lbl" for="alvoA">Ajudar quem</label><select id="alvoA" data-act-change="rsAlvo">${outros.map(([u,x])=>`<option value="${u}" ${o.alvo===u?"selected":""}>${esc(x.nome)} (${x.pilha} dados)</option>`).join("")}</select>`:""}
-     <div class="row between"><span class="lbl">Dados arriscados</span><div class="step"><button data-act="rs" data-k="n" data-v="${Math.max(1,o.n-1)}" aria-label="menos dados">−</button><b>${o.n}</b><button data-act="rs" data-k="n" data-v="${Math.min(s.pilha,o.n+1)}" aria-label="mais dados">+</button></div></div>
-     <div class="row">${pileHTML(o.n,s.pilha)}</div>
-     <p class="small muted">Dificuldade <b>${dif.d}</b>${dif.cx?" · Complexo":""}${own?" · Estilo seu (−1)":""}${dif.notes.length?" · "+dif.notes.join(" · "):""}</p>
-     <button class="btn primary block" data-act="doRoll" ${(o.tipo==="ajudar"&&!outros.length)||s.pilha<1?"disabled":""}>Rolar ${o.n} dado${o.n>1?"s":""}</button>
-     <button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
+     <span class="lbl">Estilo da ação</span><div class="chips">${ordem.map(e=>`<button class="chip ${o.estilo===e?"on":""} ${A.est.includes(e)?"own":""}" data-act="rs" data-k="estilo" data-v="${o.estilo===e?"":e}">${e}${A.est.includes(e)?" −1":""}</button>`).join("")}</div>
+     ${o.tipo==="teste"?`<button class="tog ${o.cx?"on":""}" data-act="rs" data-k="cx" data-v="${o.cx?"":"1"}"><span>Teste Complexo</span><span class="sw"></span></button>`:""}
+     <button class="tog ${o.rec?"on":""}" data-act="rs" data-k="rec" data-v="${o.rec?"":"1"}" ${(s.recursos||0)<1?"disabled":""}><span>Usar um Recurso (−1) · tem ${s.recursos||0}</span><span class="sw"></span></button>
+     <button class="btn primary xl block" data-act="doRoll" ${(o.tipo==="ajudar"&&!outros.length)||s.pilha<1?"disabled":""}>${ic("dice")} Rolar ${o.n}</button>`;
   }
   if(o.kind==="susto"){
-    const r=o.res;
-    return `<h2>Teste de Susto</h2>${r?`<div class="row">${dieHTML(r.v,(r.v>=4?(r.v===6?"six":""):"fail")+" anim")}</div><p><b>${r.v>=4?"Manteve a compostura.":"Perdeu a compostura."}</b> ${r.msg}</p>
-      ${r.v<4&&r.podeRepetir?`<button class="btn block" data-act="sustoRepetir">Repetir (Benefício da Dúvida)</button>`:""}<button class="btn primary block" data-act="closeSheet">Ok</button>`:""}`;
+    const r=o.res; if(!r) return "";
+    return `<span class="lbl">Teste de Susto</span><div class="verdict ${r.v>=4?"ok":"no"}">${r.v>=4?"Firme":"Apavorada"}</div><div class="dice">${dieHTML(r.v,(r.v>=4?(r.v===6?"six":""):"fail")+" anim")}</div><div class="conseq"><div><span>${r.msg}</span></div></div>
+      ${r.v<4&&r.podeRepetir?`<button class="btn block" data-act="sustoRepetir">Repetir (Benefício da Dúvida)</button>`:""}<button class="btn primary xl block" data-act="closeSheet">Ok</button>`;
   }
   if(o.kind==="tratar"){
     const max=Math.min(s.pt,s.ferida-s.sequela);
-    return `<h2>Tratar Feridas</h2><p class="small">Cada PT reduz 1 de Ferida, até o mínimo de ${s.sequela} (suas Sequelas).</p>
-     <div class="row between"><span>PT a gastar</span><div class="step"><button data-act="tsN" data-v="${Math.max(0,(o.n||0)-1)}">−</button><b>${o.n||0}</b><button data-act="tsN" data-v="${Math.min(max,(o.n||0)+1)}">+</button></div></div>
+    return `<h2>Tratar Feridas</h2><p class="small muted">1 PT = −1 Ferida. Não desce abaixo de ${s.sequela} (suas Sequelas).</p>
+     <div class="line"><div class="grow"><b>PT a gastar</b></div><div class="step"><button data-act="tsN" data-v="${Math.max(0,(o.n||0)-1)}">−</button><b>${o.n||0}</b><button data-act="tsN" data-v="${Math.min(max,(o.n||0)+1)}">+</button></div></div>
      <button class="btn primary block" data-act="tratarOk" ${!(o.n>0)?"disabled":""}>Tratar ${o.n||0} de Ferida</button>
-     <button class="btn block" data-act="curarSeq" ${(s.recursos||0)<1||s.sequela<1?"disabled":""}>Curar 1 Sequela com Recurso</button><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
+     <button class="btn block" data-act="curarSeq" ${(s.recursos||0)<1||s.sequela<1?"disabled":""}>Curar 1 Sequela com um Recurso</button><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
   }
   if(o.kind==="compartilhar"){
     const outros=vivos().filter(([u])=>u!==S.uid);
-    return `<h2>Compartilhar Forças</h2><label class="lbl" for="cpA">Para quem</label><select id="cpA" data-act-change="cpAlvo">${outros.map(([u,x])=>`<option value="${u}" ${o.alvo===u?"selected":""}>${esc(x.nome)} (${x.pt} PT)</option>`).join("")}</select>
-     <div class="row between"><span>PT</span><div class="step"><button data-act="cpN" data-v="${Math.max(0,(o.n||0)-1)}">−</button><b>${o.n||0}</b><button data-act="cpN" data-v="${Math.min(s.pt,(o.n||0)+1)}">+</button></div></div>
+    return `<h2>Compartilhar Forças</h2><select id="cpA" data-act-change="cpAlvo" aria-label="Para quem">${outros.map(([u,x])=>`<option value="${u}" ${o.alvo===u?"selected":""}>${esc(x.nome)} (${x.pt} PT)</option>`).join("")}</select>
+     <div class="line"><div class="grow"><b>PT</b></div><div class="step"><button data-act="cpN" data-v="${Math.max(0,(o.n||0)-1)}">−</button><b>${o.n||0}</b><button data-act="cpN" data-v="${Math.min(s.pt,(o.n||0)+1)}">+</button></div></div>
      <button class="btn primary block" data-act="cpOk" ${!(o.n>0)||!o.alvo?"disabled":""}>Transferir</button><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
   }
   if(o.kind==="tomar"){
-    return `<h2>Tomar Jeito</h2><p class="small">Qual Estilo recuperar?</p><div class="list">${(s.incap||[]).map(e=>`<button class="btn" data-act="tomarOk" data-e="${e}">${e}</button>`).join("")}</div><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
+    return `<h2>Tomar Jeito</h2><p class="small muted">Qual Estilo destravar? (3 PT)</p><div class="list">${(s.incap||[]).map(e=>`<button class="btn" data-act="tomarOk" data-e="${e}">${e}</button>`).join("")}</div><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
   }
   if(o.kind==="arriscar"){
     const outros=vivos().filter(([u,x])=>!escapou(x));
-    const ateFim=s.hab==="Até o Fim", herói=s.hab==="Sacrifício Heroico", final=s.hab==="Final Girl";
-    return `<h2>Arriscar Tudo</h2><p class="small">Você descarta todos os seus dados e a escolhida escapa na hora. 1x por sessão, uma por Encontro, e não vale se você for a última na cena.</p>
-     <label class="lbl" for="arA">Quem escapa</label><select id="arA" data-act-change="arAlvo">${outros.map(([u,x])=>`<option value="${u}" ${o.alvo===u?"selected":""}>${esc(x.nome)}${u===S.uid?" (você)":""}</option>`).join("")}</select>
-     ${ateFim?`<p class="small">Até o Fim: se for você, mantém 1 dado.</p>`:""}${herói?`<p class="small">Sacrifício Heroico: salvando outra, descarta só metade.</p>`:""}${final?`<p class="small">Final Girl: se for a última, não descarta nada.</p>`:""}
-     <button class="btn primary block" data-act="arOk">Arriscar Tudo</button><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
+    return `<h2>Arriscar Tudo</h2><p class="small">Você descarta todos os seus dados e quem você escolher escapa na hora. Só 1 vez por sessão.</p>
+     <div class="list">${outros.map(([u,x])=>`<button class="line" data-act="arPick" data-u="${u}" style="text-align:left;${o.alvo===u?"border-color:var(--blood);background:var(--blood-bg)":""}"><div class="grow"><b>${esc(x.nome)}${u===S.uid?" (você)":""}</b><span>${x.pilha} dados</span></div></button>`).join("")}</div>
+     ${["Até o Fim","Sacrifício Heroico","Final Girl"].includes(s.hab)?`<p class="note">${esc(s.hab)} já é aplicada automaticamente.</p>`:""}
+     <button class="btn primary xl block" data-act="arOk">${ic("flame")} Arriscar Tudo</button>`;
   }
   if(o.kind==="kAlvo"){
-    const kp=pools().killer; const enc=modo()==="encontro";
+    const kp=pools().killer;
     const alvos=vivos().filter(([u,x])=>!escapou(x));
     const r=o.res;
-    if(r) return `<h2>${o.a==="ferir"?"Ferir":"Matar"}</h2>${r.v?`<div class="row">${dieHTML(r.v,(r.v===6?"six":"")+" anim")}</div>`:""}<p>${r.msg}</p>
-      ${r.mutilar?`<div class="grid2"><button class="btn killer" data-act="kSeis" data-o="matar">Matar</button><button class="btn" data-act="kSeis" data-o="mutilar">Mutilar (+4 PH)</button></div>`:`<button class="btn primary block" data-act="closeSheet">Ok</button>`}`;
-    return `<h2>${o.a==="ferir"?"Ferir":"Matar"}</h2><div class="list">${alvos.map(([u,x])=>{const pode=o.a==="ferir"||x.pilha<kp;return `<button class="btn" style="justify-content:space-between" data-act="kGo" data-u="${u}" ${pode?"":"disabled"}><span>${esc(x.nome)}</span><span class="small muted">${x.pilha} dados · Ferida ${x.ferida}</span></button>`}).join("")||`<p class="muted">Ninguém ao alcance.</p>`}</div><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
+    if(r) return `<span class="lbl">${o.a==="ferir"?"Ferir":"Matar"}</span>${r.v?`<div class="dice">${dieHTML(r.v,(r.v===6?"six":"")+" anim")}</div>`:""}<div class="conseq"><div><span>${r.msg}</span></div></div>
+      ${r.mutilar?`<div class="acts"><button class="act k go" data-act="kSeis" data-o="matar">${ic("skull")}<b>Matar</b><span>Fim da linha</span></button><button class="act k" data-act="kSeis" data-o="mutilar">${ic("knife")}<b>Mutilar</b><span>+3 Sequelas · +4 PH</span></button></div>`:`<button class="btn primary xl block" data-act="closeSheet">Ok</button>`}`;
+    return `<div class="row between"><h2>${o.a==="ferir"?"Ferir quem?":"Matar quem?"}</h2><button class="btn ghost sm" data-act="closeSheet">Fechar</button></div>
+     ${o.a==="matar"?`<p class="small muted">Só quem tem menos dados que você (${kp}).</p>`:`<p class="small muted">Rola 1 dado seu: 6 mata ou mutila, 1 a 5 vira Ferida.</p>`}
+     <div class="list">${alvos.map(([u,x])=>{const pode=o.a==="ferir"||x.pilha<kp;return `<button class="line" data-act="kGo" data-u="${u}" ${pode?"":"disabled"} style="text-align:left;${pode?"":"opacity:.4"}"><div class="grow"><b>${esc(x.nome)}</b><div class="row" style="gap:6px;margin-top:4px">${mini(x.pilha)}<span class="tiny" style="color:#ff6b7f">ferida ${x.ferida}</span></div></div></button>`}).join("")||`<p class="muted">Ninguém ao alcance.</p>`}</div>`;
   }
   if(o.kind==="kUnica"){
     const A=ACOES_U[o.a]; const alvos=vivos();
-    return `<h2>${o.a}</h2><p class="small">${A.d}</p>${(A.marc||A.incap)?`<span class="lbl">Em quem</span><div class="list">${alvos.map(([u,x])=>`<button class="btn ${o.alvo===u?"killer":""}" data-act="kuAlvo" data-u="${u}">${esc(x.nome)}</button>`).join("")}</div>`:""}
-     ${A.incap&&o.alvo?`<span class="lbl">Estilo</span><div class="row">${ESTILOS.map(e=>`<button class="chip ${o.est===e?"on":""}" data-act="kuEst" data-e="${e}">${e}</button>`).join("")}</div>`:""}
-     <button class="btn killer block" data-act="kuOk" ${((A.marc||A.incap)&&!o.alvo)||(A.incap&&!o.est)?"disabled":""}>Usar ${A.c?`(−${A.c} PH)`:""}</button><button class="btn ghost block" data-act="closeSheet">Cancelar</button>`;
+    return `<div class="row between"><h2>${o.a}</h2><button class="btn ghost sm" data-act="closeSheet">Fechar</button></div><p class="small">${A.d}</p>
+     ${(A.marc||A.incap)?`<span class="lbl">Em quem</span><div class="list">${alvos.map(([u,x])=>`<button class="line" data-act="kuAlvo" data-u="${u}" style="${o.alvo===u?"border-color:var(--killer);background:var(--killer-bg)":""}"><div class="grow"><b>${esc(x.nome)}</b></div></button>`).join("")}</div>`:""}
+     ${A.incap&&o.alvo?`<span class="lbl">Qual Estilo</span><div class="chips">${ESTILOS.map(e=>`<button class="chip ${o.est===e?"on":""}" data-act="kuEst" data-e="${e}">${e}</button>`).join("")}</div>`:""}
+     <button class="btn killer xl block" data-act="kuOk" ${((A.marc||A.incap)&&!o.alvo)||(A.incap&&!o.est)?"disabled":""}>Usar${A.c?` · ${A.c} PH`:""}</button>`;
   }
   if(o.kind==="editSob"){
     const x=S.sobrev[o.u]; if(!x) return `<button class="btn block" data-act="closeSheet">Fechar</button>`;
-    const st=(f,lab,max)=>`<div class="row between"><span>${lab}</span><div class="step"><button data-act="mStep" data-u="${o.u}" data-f="${f}" data-d="-1" data-max="${max}">−</button><b>${f.includes(".")?(x.marc?.[f.split(".")[1]]||0):(x[f]||0)}</b><button data-act="mStep" data-u="${o.u}" data-f="${f}" data-d="1" data-max="${max}">+</button></div></div>`;
-    return `<h2>${esc(x.nome)}</h2><div class="list">${st("pilha","Pilha Comum",6)}${st("fuga","Pilha de Fuga",9)}${st("pt","PT",10)}${st("ferida","Ferida",6)}${st("sequela","Sequela",5)}${st("recursos","Recursos",9)}
-     ${Object.keys(MARC_N).map(k=>st("marc."+k,MARC_N[k],6)).join("")}</div>
-     <span class="lbl">Estilos incapacitados</span><div class="row">${ESTILOS.map(e=>`<button class="chip ${(x.incap||[]).includes(e)?"on":""}" data-act="mIncap" data-u="${o.u}" data-e="${e}">${e}</button>`).join("")}</div>
-     <p class="small muted">Ajustes do Mestre não mexem nas pilhas do Killer nem do Descarte.</p>
-     <div class="grid2"><button class="btn" data-act="mStatus" data-u="${o.u}">${x.status==="morto"?"Reviver":"Matar"}</button><button class="btn primary" data-act="closeSheet">Pronto</button></div>`;
+    const st=(f,lab,max)=>`<div class="line"><div class="grow"><b>${lab}</b></div><div class="step"><button data-act="mStep" data-u="${o.u}" data-f="${f}" data-d="-1" data-max="${max}" aria-label="menos">−</button><b>${f.includes(".")?(x.marc?.[f.split(".")[1]]||0):(x[f]||0)}</b><button data-act="mStep" data-u="${o.u}" data-f="${f}" data-d="1" data-max="${max}" aria-label="mais">+</button></div></div>`;
+    return `<div class="row between"><h2>${esc(x.nome)}</h2><button class="btn primary sm" data-act="closeSheet">Pronto</button></div>
+     <div class="list">${st("pilha","Dados",6)}${st("pt","PT",10)}${st("ferida","Ferida",6)}${st("sequela","Sequela",5)}${modo()==="encontro"?st("fuga","Fuga",9):""}${st("recursos","Recursos",9)}</div>
+     <details><summary>Marcadores e Estilos</summary><div class="in"><div class="list">${Object.keys(MARC_N).map(k=>st("marc."+k,MARC_N[k],6)).join("")}</div>
+      <span class="lbl">Estilos travados</span><div class="chips">${ESTILOS.map(e=>`<button class="chip ${(x.incap||[]).includes(e)?"on":""}" data-act="mIncap" data-u="${o.u}" data-e="${e}">${e}</button>`).join("")}</div></div></details>
+     <p class="tiny muted">Ajustes aqui não mexem nas pilhas do Killer nem do Descarte.</p>
+     <button class="btn block" data-act="mStatus" data-u="${o.u}">${x.status==="morto"?"Reviver":"Marcar como morta"}</button>`;
   }
   return "";
 }
@@ -795,6 +929,8 @@ const ACT={
  copiar:()=>{navigator.clipboard?.writeText(S.code).then(()=>toast("Código copiado"),()=>toast("Código: "+S.code))},
  assumirKiller:async()=>{await upd(P.mesa(S.code),{killer:S.uid});log(`${S.conta.apelido} assumiu o monstro.`,"k");toast("O monstro é seu.")},
  closeSheet:()=>closeSheet(),
+ sub:d=>{S.subs=S.subs||{};S.subs[d.key]=d.v;render();window.scrollTo(0,0)},
+ arPick:d=>{S.sheet.alvo=d.u;renderSheet()},
  scrim:(d,e)=>{if(e.target.classList.contains("scrim"))closeSheet()},
  draftArq:d=>{S.draft.arq=d.a;S.draftArqChanged=true;render()},
  novaSob:()=>{S.draft.criando=true;render()},
@@ -858,6 +994,7 @@ document.addEventListener("change",async e=>{
   const t=e.target;
   if(t.dataset.kd){const d=S.draft.k;const f=t.dataset.kd;if(f==="a0")d.acoes[0]=t.value;else if(f==="a1")d.acoes[1]=t.value;else d[f]=t.value;
     if(f==="amP")d.acoes[0]=AMEACAS[d.amP].ac[0];if(f==="amS")d.acoes[1]=AMEACAS[d.amS].ac[0];if(f!=="nome")render();return}
+  if(t.id==="sm"){t.closest(".tog")?.classList.toggle("on",t.checked);return}
   const a=t.dataset.actChange; if(!a) return;
   if(a==="hab") await upd(P.sob(S.code,S.uid),{hab:t.value});
   if(a==="setKiller"){await upd(P.mesa(S.code),{killer:t.value||null});log(t.value?`O monstro agora está com ${nick(t.value)}.`:"O assento do monstro ficou vago.","k")}
@@ -894,21 +1031,21 @@ async function doRoll(){
   if(o.tipo==="partir"&&s.flags?.aquecer){succ++;patch.flags={...s.flags,aquecer:false};msgs.push("Aquecer: +1 sucesso garantido.")}
   const ok=cx?(succ>=2||sixes>0&&succ>=1):succ>=1;
   const fails=n-Math.min(succ,n);
-  if(o.rec){patch.recursos=s.recursos-1;msgs.push("Recurso gasto.")}
+  if(o.rec){patch.recursos=s.recursos-1;msgs.push("1 Recurso usado.")}
   let pilha=s.pilha;
   const perder=(q)=>{ if(q<=0)return; pilha-=q;
-    if(enc){patch.desc=(s.desc||0)+q;msgs.push(`${q} dado(s) <b>descartado(s)</b>.`)}
-    else {patch.sac=(s.sac||0)+q;msgs.push(`${q} dado(s) <b>sacrificado(s) para ${esc(S.killer?.nome||"o Killer")}</b>${S.mesa.killer?` (com ${esc(nick(S.mesa.killer))})`:""}.`)}
+    if(enc){patch.desc=(s.desc||0)+q;msgs.push(`${q} ${q>1?"dados foram":"dado foi"} para o <b>Descarte</b>.`)}
+    else {patch.sac=(s.sac||0)+q;msgs.push(`${q} ${q>1?"dados foram":"dado foi"} para <b>${esc(S.killer?.nome||"o Killer")}</b>${S.mesa.killer?` (${esc(nick(S.mesa.killer))})`:""}.`)}
     if((s.marc?.possessao||0)>0){const pv=Math.min(6,s.marc.possessao+q);patch.marc={...s.marc,possessao:pv};msgs.push(`Possessão subiu para ${pv}.`);if(pv>=6)log(`👁 A Possessão de ${s.nome} chegou a 6!`,"k")}
   };
   if(o.tipo==="teste"){
     perder(fails);
     let extra=Math.max(0,succ-(cx?2:1));
     if(s.hab==="Egocêntrica"&&sixes){extra+=2*sixes;msgs.push(`Egocêntrica: +${2*sixes} PT pelos 6.`)}
-    if(extra){patch.pt=clamp(s.pt+extra,0,10);msgs.push(`+${extra} PT.`)}
+    if(extra){patch.pt=clamp(s.pt+extra,0,10);msgs.push(`<b>+${extra} PT</b> pelos sucessos extras.`)}
     log(`${s.nome} rolou ${n} (${dice.join(", ")}) ${o.estilo||""}: ${ok?"sucesso":"falha"}.`);
   } else if(o.tipo==="vazar"){
-    let fuga=s.fuga||0; pilha-=n; fuga+=Math.min(succ,n); if(fails){patch.desc=(s.desc||0)+fails;msgs.push(`${fails} dado(s) descartado(s).`)}
+    let fuga=s.fuga||0; pilha-=n; fuga+=Math.min(succ,n); if(fails){patch.desc=(s.desc||0)+fails;msgs.push(`${fails} ${fails>1?"dados foram":"dado foi"} para o <b>Descarte</b>.`)}
     let extraRec=0,extra=0; for(let i=0;i<sixes;i++){ if(pilha>0){pilha--;fuga++;extra++} else if(pools().descarte-extraRec>0){extraRec++;fuga++;extra++} }
     if(sixes)msgs.push(extra?`Fuga vantajosa: +${extra} dado(s) extra para a Fuga.`:`Fuga vantajosa, mas não havia dado na Pilha nem no Descarte para puxar.`);
     if(extraRec)patch.rec=(s.rec||0)+extraRec;
@@ -916,11 +1053,11 @@ async function doRoll(){
     if(fuga>=fugaAlvo()){patch.escEnc=encId();msgs.push("<b>Você escapou do Encontro!</b>");log(`🏃 ${s.nome} escapou do Encontro!`)}
     else log(`${s.nome} tentou vazar dali: Fuga ${fuga}/${fugaAlvo()}.`);
   } else if(o.tipo==="partir"){
-    pilha-=fails; if(fails){patch.desc=(s.desc||0)+fails;msgs.push(`${fails} dado(s) descartado(s).`)}
+    pilha-=fails; if(fails){patch.desc=(s.desc||0)+fails;msgs.push(`${fails} ${fails>1?"dados foram":"dado foi"} para o <b>Descarte</b>.`)}
     if(ok){patch.forc=(s.forc||0)+1;msgs.push("O Killer descarta 1 dado!");log(`💥 ${s.nome} partiu pra cima: o Killer perdeu 1 dado.`,"d")}
     else log(`${s.nome} partiu pra cima e não conseguiu nada.`);
   } else if(o.tipo==="distrair"){
-    pilha-=fails; if(fails){patch.desc=(s.desc||0)+fails;msgs.push(`${fails} dado(s) descartado(s).`)}
+    pilha-=fails; if(fails){patch.desc=(s.desc||0)+fails;msgs.push(`${fails} ${fails>1?"dados foram":"dado foi"} para o <b>Descarte</b>.`)}
     if(ok){patch.distr=(s.distr||0)+1;msgs.push("Distraído! Matar agora custa +1 dado e 3 PH.");log(`${s.nome} distraiu o Killer.`)}
   } else if(o.tipo==="ajudar"){
     const t=S.sobrev[o.alvo]; const give=Math.min(succ,n,6-t.pilha);
