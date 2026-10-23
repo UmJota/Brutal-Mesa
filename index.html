@@ -639,10 +639,9 @@ function viewFicha(){
         </div></section>`;
       }
     } else {
-      h+=`<section class="card"><div class="row">${ic("dice")}<b>Quando o Mestre pedir um teste</b></div><p class="small muted">Escolha quantos dados arriscar. O que falhar vai direto para ${esc(S.killer?.nome||"o Killer")}.</p></section>`;
+      h+=`<p class="note">Perdeu ou ganhou dados? Toque nos seus dados lá em cima. O que for para o Killer chega nele na hora.</p>`;
     }
     h+=`<section class="line"><div class="grow"><b>Recursos</b><span>Cada um reduz 1 a Dificuldade</span></div><div class="step"><button data-act="sobStep" data-f="recursos" data-d="-1" aria-label="menos recurso">−</button><b>${s.recursos||0}</b><button data-act="sobStep" data-f="recursos" data-d="1" aria-label="mais recurso">+</button></div></section>`;
-    if(!dead&&!esc_&&!enc) h+=`<div style="position:sticky;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:5"><button class="btn primary xl block" data-act="rolar" data-tipo="teste" ${s.pilha<1?"disabled":""} style="box-shadow:0 8px 24px rgba(0,0,0,.6)">${ic("dice")} Rolar teste</button></div>`;
   }
   if(tb.cur==="vant"){
     const A=ARQ[s.arq];
