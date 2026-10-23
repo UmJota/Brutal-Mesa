@@ -311,6 +311,14 @@ const PRONTOS={
 };
 const INTENTOS=[["Sobreviventes se beijam",1],["Sobrevivente morre num Encontro",1],["Sobrevivente sai ferida de um Encontro",1],["Sobrevivente usa Choque de Realidade",1],["Sobrevivente falha num Teste de Susto",1],["Sobrevivente cai numa Armadilha",2],["Todas tentam escapar no 1º turno",4],["Contorcendo-se (alguém se arrepiou na mesa)",1]];
 const DESAFIOS=[["Agir conforme o Arquétipo",1],["Tentar chamar ajuda",2],["Investigar barulho sozinha",3],["Trair alguém para se salvar",4],["Saidinha a sós com outra Sobrevivente",5],["Shot de vodka / dose de cachaça",1],["Latinha de cerveja",2],["Taça de vinho",3],["Copo de drink",4],["Balinha azeda",2],["Mordida de limão",3],["Mordida de alho",4],["Mordida de cebola",5],["Colher de molho de pimenta",6],["Boa interpretação / piada que matou a mesa",1]];
+const MANOBRAS=[
+ ["vazar","run","Vazar Dali","Fugir do Killer","Teste Ligeiro. Cada sucesso vai para a sua Pilha de Fuga. Cada 6 puxa mais 1 dado da sua pilha (ou do Descarte, se a sua estiver vazia) para a Fuga. Falhas vão para o Descarte. Encheu a Fuga, escapou.","Use “Mover para a Fuga” para cada sucesso e “−1 para o Descarte” para cada falha."],
+ ["partir","fist","Partir pra Cima","Killer perde 1 dado","Teste Potente. Com pelo menos 1 sucesso, o Killer descarta 1 dado. Falhas vão para o Descarte.","Use “−1 para o Descarte” para cada falha. Passou? Toque em “Killer perde 1 dado”."],
+ ["distrair","eye","Distrair","Matar fica mais caro","Teste Desenrolado Complexo (2 sucessos ou um 6). Se passar, para Matar o Killer precisa gastar mais 1 dado e 3 PH. Acumula.","Use “−1 para o Descarte” para cada falha e avise o Killer."],
+ ["ajudar","heart","Ajudar Alguém","Doe dados a uma aliada","Teste com o Estilo que fizer sentido. Cada sucesso vira um dado na pilha de outra Sobrevivente. As falhas não se perdem.","Para cada sucesso, use “Doar 1 dado” e escolha a aliada."],
+ ["folego","wind","Recuperar Fôlego","+1 dado","Sem teste. Você puxa 1 dado do Descarte para a sua pilha.","Use “+1 do Descarte”."],
+ ["arriscar","flame","Arriscar Tudo","Alguém escapa na hora","Você descarta todos os seus dados e uma Sobrevivente à sua escolha (pode ser você) escapa do Encontro na hora. Uma vez por sessão, uma por Encontro, e não vale se você for a última na cena.","Use “−1 para o Descarte” até zerar. O Mestre marca quem escapou."]
+];
 const MARC_N={possessao:"Possessão",condenacao:"Condenação",infeccao:"Infecção",maldicao:"Maldição"};
 
 function killerStats(k){
@@ -600,7 +608,7 @@ function statusCard(s){
   return `<section class="card">
    <div class="who"><div style="min-width:0"><h2 class="${dead?"dead-name":""}">${esc(s.nome)}</h2><span class="tiny muted">${esc(s.arq)} · ${A.est.join(" + ")}</span></div>
     ${dead?`<span class="pill dead">${ic("skull")} Morta</span>`:e?`<span class="pill f">${ic("run")} Escapou</span>`:`<span class="pill">Viva</span>`}</div>
-   <button data-act="meu" style="text-align:left;display:flex;flex-direction:column;gap:8px" aria-label="Ajustar meus números">
+   <button data-act="meu" style="text-align:left;display:flex;flex-direction:column;gap:8px;width:100%" aria-label="Ajustar meus números">
     <div class="row between" style="width:100%"><span class="lbl">Seus dados · toque para ajustar</span><span class="num muted">${s.pilha}/6</span></div>
     ${diceRow(s.pilha)}</button>
    <div class="stats">
@@ -617,7 +625,7 @@ function viewFicha(){
   const enc=modo()==="encontro"; const dead=s.status==="morto", esc_=escapou(s);
   const susto=S.mesa.susto; const sustoPend=susto&&susto.id&&s.sustoId!==susto.id&&!dead&&!esc_;
   let h=`<div class="wrap">`;
-  if(sustoPend) h+=`<div class="banner"><div class="row">${ic("scare")}<h2>Teste de Susto!</h2></div><p class="small">Role 1 dado. Tirou 1, 2 ou 3: ele ${susto.sac?"vai para o Killer":"vai para o Descarte"}.</p><button class="btn primary xl block" data-act="susto">Rolar</button></div>`;
+  if(sustoPend) h+=`<div class="banner"><div class="row">${ic("scare")}<h2>Teste de Susto!</h2></div><p class="small">Role 1 dado na mesa. Tirou 1, 2 ou 3? Toque em <b>Perdi o dado</b> e ele ${susto.sac?"vai para o Killer":"vai para o Descarte"}.</p><div class="acts"><button class="act" data-act="sustoMan" data-r="ok">${ic("star")}<b>Passei</b><span>Tirei 4 ou mais</span></button><button class="act go" data-act="sustoMan" data-r="falha">${ic("skull")}<b>Perdi o dado</b><span>Tirei 1, 2 ou 3</span></button></div></div>`;
   h+=statusCard(s);
   const tb=sub("ficha",[["jogar","Jogar"],["vant","Vantagens"],["eu","Ficha"]]);
   h+=tb.html;
@@ -629,14 +637,8 @@ function viewFicha(){
       else {
         const alvo=fugaAlvo(),f=s.fuga||0;
         h+=`<section class="fuga"><div class="row between"><span class="lbl" style="color:#9fdbe6">Fuga</span><b class="num">${f}/${alvo}</b></div>${diceRow(f,alvo,"fu")}<p class="small">${f>=alvo?"Pronto para escapar.":`Faltam <b>${alvo-f}</b> dado(s) para escapar.`}</p></section>
-        <section class="card"><span class="lbl">Seu turno · escolha uma manobra</span><div class="acts">
-         <button class="act go" data-act="rolar" data-tipo="vazar" ${s.pilha<1?"disabled":""}>${ic("run")}<b>Vazar Dali</b><span>Sucessos vão para a Fuga</span></button>
-         <button class="act" data-act="rolar" data-tipo="partir" ${s.pilha<1?"disabled":""}>${ic("fist")}<b>Partir pra Cima</b><span>Killer perde 1 dado</span></button>
-         <button class="act" data-act="rolar" data-tipo="distrair" ${s.pilha<1?"disabled":""}>${ic("eye")}<b>Distrair</b><span>Matar fica mais caro</span></button>
-         <button class="act" data-act="rolar" data-tipo="ajudar" ${s.pilha<1?"disabled":""}>${ic("heart")}<b>Ajudar Alguém</b><span>Doe dados a uma aliada</span></button>
-         <button class="act" data-act="folego">${ic("wind")}<b>Recuperar Fôlego</b><span>+1 dado do Descarte</span></button>
-         <button class="act" data-act="arriscar" ${s.arriscouSessao===S.mesa.sessao?"disabled":""}>${ic("flame")}<b>Arriscar Tudo</b><span>Perde tudo, alguém escapa</span></button>
-        </div></section>`;
+        <section class="card"><span class="lbl">No seu turno você pode · toque para ver como funciona</span><div class="acts">${MANOBRAS.map(m=>`<button class="act" data-act="info" data-k="${m[0]}">${ic(m[1])}<b>${m[2]}</b><span>${m[3]}</span></button>`).join("")}</div>
+        <p class="note">Role na mesa e registre o resultado tocando nos seus dados lá em cima.</p></section>`;
       }
     } else {
       h+=`<p class="note">Perdeu ou ganhou dados? Toque nos seus dados lá em cima. O que for para o Killer chega nele na hora.</p>`;
@@ -883,6 +885,12 @@ function sheetBody(o){
      <button class="tog ${o.rec?"on":""}" data-act="rs" data-k="rec" data-v="${o.rec?"":"1"}" ${(s.recursos||0)<1?"disabled":""}><span>Usar um Recurso (−1) · tem ${s.recursos||0}</span><span class="sw"></span></button>
      <button class="btn primary xl block" data-act="doRoll" ${(o.tipo==="ajudar"&&!outros.length)||s.pilha<1?"disabled":""}>${ic("dice")} ${o.fis?"Aplicar resultado":"Rolar "+o.n}</button>`;
   }
+  if(o.kind==="info"){
+    const m=MANOBRAS.find(x=>x[0]===o.k);
+    return `<div class="row between"><div class="row">${ic(m[1])}<h2>${m[2]}</h2></div><button class="btn ghost sm" data-act="closeSheet">Fechar</button></div>
+     <p>${m[4]}</p><div class="note">${m[5]}</div>
+     <button class="btn primary xl block" data-act="meu">Ajustar meus números</button>`;
+  }
   if(o.kind==="meu"){
     const p=pools(); const enc=modo()==="encontro";
     const stp=(f,lab,max,sub)=>`<div class="line"><div class="grow"><b>${lab}</b>${sub?`<span>${sub}</span>`:""}</div><div class="step"><button data-act="sobStep" data-f="${f}" data-d="-1" data-max="${max}" aria-label="menos ${lab}">−</button><b>${s[f]||0}</b><button data-act="sobStep" data-f="${f}" data-d="1" data-max="${max}" aria-label="mais ${lab}">+</button></div></div>`;
@@ -894,8 +902,10 @@ function sheetBody(o){
       <button class="act" data-act="meuDado" data-o="recupera" ${s.pilha>=6||p.descarte<1?"disabled":""}>${ic("wind")}<b>+1 do Descarte</b><span>${p.descarte} no Descarte</span></button>
       <button class="act" data-act="meuDado" data-o="ganha" ${s.pilha>=6?"disabled":""}>${ic("plus")}<b>+1 dado</b><span>O Mestre me deu</span></button>
       ${enc?`<button class="act" data-act="meuDado" data-o="fuga" ${s.pilha<1?"disabled":""}>${ic("run")}<b>Mover para a Fuga</b><span>Fuga ${s.fuga||0}/${fugaAlvo()}</span></button>
-      <button class="act" data-act="meuDado" data-o="volta" ${!(s.fuga>0)?"disabled":""}>${ic("dice")}<b>Voltar da Fuga</b><span>Para sua pilha</span></button>`:""}
+      <button class="act" data-act="meuDado" data-o="volta" ${!(s.fuga>0)?"disabled":""}>${ic("dice")}<b>Voltar da Fuga</b><span>Para sua pilha</span></button>
+      <button class="act" data-act="meuDado" data-o="forc">${ic("fist")}<b>Killer perde 1 dado</b><span>Acertei Partir pra Cima</span></button>`:""}
      </div>
+     ${vivos().filter(([u])=>u!==S.uid).length?`<span class="lbl">Doar 1 dado para</span><div class="chips">${vivos().filter(([u])=>u!==S.uid).map(([u,x])=>`<button class="chip" data-act="doar" data-u="${u}" ${s.pilha<1||x.pilha>=6?"disabled":""}>${esc(x.nome)} · ${x.pilha}</button>`).join("")}</div>`:""}
      <div class="list">${stp("pt","Tensão (PT)",10)}${stp("ferida","Ferida",6,"Chegou a 6, morreu")}${stp("sequela","Sequela",5)}${stp("recursos","Recursos",9)}</div>
      <p class="tiny muted">Os botões de dados movem o dado para a pilha certa, então o Killer e o Descarte ficam sempre em dia.</p>`;
   }
@@ -997,6 +1007,11 @@ const ACT={
    openSheet({kind:"roll",tipo:d.tipo,estilo:pre,cx:false,rec:false,n:Math.min(s.pilha,d.tipo==="teste"?2:Math.max(1,s.pilha)),alvo:outros[0]?.[0]})},
  rs:d=>{const o=S.sheet;o[d.k]=["n","fs","f6"].includes(d.k)?+d.v:(d.k==="estilo"?d.v:!!d.v);if(d.k==="n"){o.fs=Math.min(o.fs||0,o.n);o.f6=Math.min(o.f6||0,o.fs)}if(d.k==="fs")o.f6=Math.min(o.f6||0,o.fs);renderSheet()},
  meu:()=>openSheet({kind:"meu"}),
+ doar:async d=>{const s=me(),t=S.sobrev[d.u];if(s.pilha<1||t.pilha>=6)return;await upd(P.sob(S.code,d.u),{pilha:t.pilha+1});await upd(P.sob(S.code,S.uid),{pilha:s.pilha-1});log(`${s.nome} doou 1 dado para ${t.nome}.`);toast(`1 dado para ${t.nome}`)},
+ info:d=>openSheet({kind:"info",k:d.k}),
+ sustoMan:async d=>{const s=me(),m=S.mesa;const pt={sustoId:m.susto.id};
+   if(d.r==="falha"&&s.pilha>0){pt.pilha=s.pilha-1;if(m.susto.sac)pt.sac=(s.sac||0)+1;else pt.desc=(s.desc||0)+1;log(`😱 ${s.nome} falhou no Susto.`,"d")} else log(`${s.nome} segurou o Susto.`);
+   await upd(P.sob(S.code,S.uid),pt)},
  meuDado:async d=>{const s=me(),p=pools();const pt={};
    if(d.o==="killer"){pt.pilha=s.pilha-1;pt.sac=(s.sac||0)+1}
    if(d.o==="descarte"){pt.pilha=s.pilha-1;pt.desc=(s.desc||0)+1}
@@ -1004,8 +1019,9 @@ const ACT={
    if(d.o==="ganha"){pt.pilha=s.pilha+1}
    if(d.o==="fuga"){pt.pilha=s.pilha-1;pt.fuga=(s.fuga||0)+1;if(pt.fuga>=fugaAlvo()){pt.escEnc=encId();log(`🏃 ${s.nome} escapou do Encontro!`)}}
    if(d.o==="volta"){pt.pilha=s.pilha+1;pt.fuga=s.fuga-1}
+   if(d.o==="forc"){pt.forc=(s.forc||0)+1}
    await upd(P.sob(S.code,S.uid),pt);
-   const txt={killer:"perdeu 1 dado para o Killer",descarte:"descartou 1 dado",recupera:"recuperou 1 dado do Descarte",ganha:"ganhou 1 dado",fuga:"moveu 1 dado para a Fuga",volta:"tirou 1 dado da Fuga"}[d.o];
+   const txt={killer:"perdeu 1 dado para o Killer",descarte:"descartou 1 dado",recupera:"recuperou 1 dado do Descarte",ganha:"ganhou 1 dado",fuga:"moveu 1 dado para a Fuga",volta:"tirou 1 dado da Fuga",forc:"partiu pra cima: o Killer perdeu 1 dado"}[d.o];
    log(`${s.nome} ${txt} (ajuste manual).`)},
  doRoll:()=>doRoll(),
  folego:async()=>{const s=me();if(pools().descarte<1)return toast("O Descarte está vazio.");if(s.pilha>=6)return toast("Sua pilha já está cheia.");await upd(P.sob(S.code,S.uid),{pilha:s.pilha+1,rec:(s.rec||0)+1});log(`${s.nome} recuperou o fôlego (+1 dado do Descarte).`)},
