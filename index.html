@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f0b0c">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#0f0b0c">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head><body>
@@ -20,7 +20,10 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{background:var(--bg);color:var(--bone)}
+html,body{background:var(--bg);color:var(--bone);overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
+body{touch-action:pan-y;position:relative}
+#app,#sheet{max-width:100vw;overflow-x:hidden}
+.sheet{touch-action:pan-y;overscroll-behavior:contain}
 body{font-family:var(--body);font-size:16px;line-height:1.4;-webkit-tap-highlight-color:transparent;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
@@ -59,7 +62,7 @@ p{margin:0}
 .top .wrap{padding-block:8px;gap:8px}
 .brand{font-family:var(--display);font-size:22px;letter-spacing:.06em;color:var(--blood);line-height:1}
 .scene{display:flex;align-items:center;gap:10px;border-radius:12px;padding:9px 12px;border:1px solid}
-.scene b{font-family:var(--display);font-weight:400;font-size:20px;letter-spacing:.05em;text-transform:uppercase;line-height:1}
+.scene b{font-family:var(--display);font-weight:400;font-size:clamp(16px,5vw,20px);white-space:nowrap;letter-spacing:.05em;text-transform:uppercase;line-height:1}
 .scene span{font-size:13px}
 .scene.livre{background:var(--slate-bg);border-color:#2c3a43;color:#d3e0e8}
 .scene.suspense{background:var(--amber-bg);border-color:var(--amber);color:#f8e2b8}
@@ -96,6 +99,7 @@ p{margin:0}
 .st{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:9px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
 .st .v{font-family:var(--display);font-size:30px;line-height:1;display:flex;align-items:baseline;gap:3px}
 .st .v small{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.stats[data-tight] .lbl{letter-spacing:.04em;font-size:10px}
 .st.pt .v{color:var(--pt)} .st.fe .v{color:#ff6b7f} .st.se .v{color:#e09a6a}
 .bar{height:8px;border-radius:99px;background:#0c0809;overflow:hidden}
 .bar span{display:block;height:100%;border-radius:99px}
@@ -554,7 +558,7 @@ function header(){
   const m=S.mesa,p=pools(),md=modo(); const vejoK=souKiller()||souMestre();
   return `<header class="top"><div class="wrap">
    <div class="row between"><div class="row" style="gap:10px;min-width:0"><span class="brand">BRUTAL</span><span class="tiny muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw">${esc(m.nome)}</span></div>${netChip()}</div>
-   <div class="scene ${md}">${ic(md==="encontro"?"knife":md==="suspense"?"eye":"table")}<div style="flex:1;min-width:0"><b>${CENA[md][0]}${md==="encontro"?` · R${m.enc?.rodada||1}`:""}</b><br><span>${CENA[md][1]}</span></div>
+   <div class="scene ${md}">${ic(md==="encontro"?"knife":md==="suspense"?"eye":"table")}<div style="flex:1;min-width:0"><b>${CENA[md][0]}${md==="encontro"?` R${m.enc?.rodada||1}`:""}</b><br><span>${CENA[md][1]}</span></div>
    <div style="text-align:right"><span class="tiny">Descarte</span><br><b class="num" style="font-family:var(--mono);font-size:18px">${p.descarte}</b></div>
    ${vejoK?`<div style="text-align:right"><span class="tiny">Killer</span><br><b class="num" style="font-family:var(--mono);font-size:18px">${p.killer}</b></div>`:""}</div>
   </div></header>`;
@@ -596,12 +600,13 @@ function statusCard(s){
   return `<section class="card">
    <div class="who"><div style="min-width:0"><h2 class="${dead?"dead-name":""}">${esc(s.nome)}</h2><span class="tiny muted">${esc(s.arq)} · ${A.est.join(" + ")}</span></div>
     ${dead?`<span class="pill dead">${ic("skull")} Morta</span>`:e?`<span class="pill f">${ic("run")} Escapou</span>`:`<span class="pill">Viva</span>`}</div>
-   <div class="row between"><span class="lbl">Seus dados</span><span class="num muted">${s.pilha}/6</span></div>
-   ${diceRow(s.pilha)}
+   <button data-act="meu" style="text-align:left;display:flex;flex-direction:column;gap:8px" aria-label="Ajustar meus números">
+    <div class="row between" style="width:100%"><span class="lbl">Seus dados · toque para ajustar</span><span class="num muted">${s.pilha}/6</span></div>
+    ${diceRow(s.pilha)}</button>
    <div class="stats">
-    <div class="st pt"><span class="lbl">Tensão</span><span class="v">${s.pt}<small>/10</small></span>${bar(s.pt,10,"pt")}</div>
-    <div class="st fe"><span class="lbl">Ferida</span><span class="v">${s.ferida}<small>/6</small></span>${bar(s.ferida,6,"fe")}</div>
-    <div class="st se"><span class="lbl">Sequela</span><span class="v">${s.sequela}<small>/5</small></span>${bar(s.sequela,5,"se")}</div>
+    <div class="st pt" data-act="meu" role="button"><span class="lbl">Tensão</span><span class="v">${s.pt}<small>/10</small></span>${bar(s.pt,10,"pt")}</div>
+    <div class="st fe" data-act="meu" role="button"><span class="lbl">Ferida</span><span class="v">${s.ferida}<small>/6</small></span>${bar(s.ferida,6,"fe")}</div>
+    <div class="st se" data-act="meu" role="button"><span class="lbl">Sequela</span><span class="v">${s.sequela}<small>/5</small></span>${bar(s.sequela,5,"se")}</div>
    </div>
    ${(marcs.length||flags.length||(s.incap||[]).length)?`<div class="row">${marcs.map(([k,v])=>`<span class="pill w">${MARC_N[k]} ${v}</span>`).join("")}${(s.incap||[]).map(x=>`<span class="pill dead">${x} travado</span>`).join("")}${flags.map(f=>`<span class="pill f">${f}</span>`).join("")}</div>`:""}
   </section>`;
@@ -762,18 +767,52 @@ function viewMestre(){
   const m=S.mesa,p=pools(),md=modo();
   const membros=Object.entries(S.membros);
   const podeEnc=vivos().some(([u,s])=>s.pilha<p.killer);
-  let h=`<div class="wrap"><section class="card"><span class="lbl">Cena atual</span><div class="acts" style="grid-template-columns:repeat(3,1fr)">
+  const tb=sub("mestre",[["painel","Painel"],["cena","Cena"],["mais","Ferramentas"]]);
+  if(tb.cur==="painel") return `<div class="wrap">${tb.html}${painel()}</div>`;
+  if(tb.cur==="mais") return `<div class="wrap">${tb.html}${ferramentas()}</div>`;
+  let h=`<div class="wrap">${tb.html}<section class="card"><span class="lbl">Cena atual</span><div class="acts" style="grid-template-columns:repeat(3,1fr)">
    ${[["livre","Livre","table"],["suspense","Suspense","eye"],["encontro","Encontro","knife"]].map(([k,n,i])=>`<button class="act ${md===k?"go":""}" data-act="modo" data-m="${k}" style="min-height:76px;align-items:center;text-align:center">${ic(i)}<b>${n}</b></button>`).join("")}</div>
    ${md==="encontro"?`<button class="btn block" data-act="rodada">Próxima rodada (agora R${m.enc?.rodada||1})</button>`:`<p class="note">${podeEnc?"<b style='color:var(--bone)'>O Killer já pode atacar:</b> tem mais dados que alguém.":"O Killer ainda não tem mais dados que nenhuma Sobrevivente."}</p>`}
    <div class="acts"><button class="act" data-act="mSusto">${ic("scare")}<b>Pedir Susto</b><span>Todos rolam 1 dado</span></button><button class="act" data-act="sessao">${ic("star")}<b>Nova sessão</b><span>Libera apegos e usos</span></button></div></section>
-   <section class="card"><span class="lbl">Sobreviventes · toque para ajustar</span><div class="list">${survRows(true)}</div></section>
-   <details><summary>Dar PT por desafio</summary><div class="in"><select id="dsel" aria-label="Para quem">${Object.entries(S.sobrev).filter(([u,s])=>s.status!=="morto").map(([u,s])=>`<option value="${u}">${esc(s.nome)}</option>`).join("")}</select>
+  </div>`;
+  return h;
+}
+function ferramentas(){
+  const m=S.mesa,p=pools(); const membros=Object.entries(S.membros);
+  return `<details open><summary>Dar PT por desafio</summary><div class="in"><select id="dsel" aria-label="Para quem">${Object.entries(S.sobrev).filter(([u,s])=>s.status!=="morto").map(([u,s])=>`<option value="${u}">${esc(s.nome)}</option>`).join("")}</select>
     <div class="list">${DESAFIOS.map((d,i)=>`<button class="line" data-act="desafio" data-i="${i}" style="text-align:left"><div class="grow"><b>${esc(d[0])}</b></div><span class="cost">+${d[1]}</span></button>`).join("")}</div></div></details>
    <details><summary>Quem está com o monstro: ${m.killer?esc(nick(m.killer)):"ninguém"}</summary><div class="in"><select id="ksel" data-act-change="setKiller" aria-label="Passar o monstro"><option value="">— ninguém —</option>${membros.map(([u,x])=>`<option value="${u}" ${m.killer===u?"selected":""}>${esc(x.apelido)}${u===S.uid?" (você)":""}</option>`).join("")}</select><p class="tiny muted">Dados perdidos vão sempre para quem estiver aqui.</p></div></details>
    <details><summary>Ajustar pilhas</summary><div class="in">
     <div class="line"><div class="grow"><b>Descarte</b><span>${p.descarte} dados</span></div><div class="step"><button data-act="adj" data-f="descAjuste" data-d="-1" aria-label="tirar">−</button><button data-act="adj" data-f="descAjuste" data-d="1" aria-label="pôr">+</button></div></div>
-    <div class="line"><div class="grow"><b>Killer</b><span>${p.killer} dados</span></div><div class="step"><button data-act="adj" data-f="killerAjuste" data-d="-1" aria-label="tirar">−</button><button data-act="adj" data-f="killerAjuste" data-d="1" aria-label="pôr">+</button></div></div></div></details>
-  </div>`;
+    <div class="line"><div class="grow"><b>Killer</b><span>${p.killer} dados</span></div><div class="step"><button data-act="adj" data-f="killerAjuste" data-d="-1" aria-label="tirar">−</button><button data-act="adj" data-f="killerAjuste" data-d="1" aria-label="pôr">+</button></div></div></div></details>`;
+}
+function painel(){
+  const p=pools(),md=modo(),enc=md==="encontro",k=S.killer;
+  const list=Object.entries(S.sobrev).sort((a,b)=>(ARQ[a[1].arq]?.ini||9)-(ARQ[b[1].arq]?.ini||9));
+  const vivas=list.filter(([u,s])=>s.status!=="morto"&&!escapou(s)).length, mortas=list.filter(([u,s])=>s.status==="morto").length, fug=list.filter(([u,s])=>escapou(s)).length;
+  const sem=new Set(Object.keys(S.membros).filter(u=>S.membros[u].papel==="sobrevivente"&&!S.sobrev[u]));
+  let h=`<section class="card"><div class="stats" style="grid-template-columns:repeat(4,1fr)" data-tight>
+    <div class="st"><span class="lbl">Vivas</span><span class="v">${vivas}</span></div>
+    <div class="st"><span class="lbl">Mortas</span><span class="v" style="color:#ff6b7f">${mortas}</span></div>
+    <div class="st"><span class="lbl">Fugiram</span><span class="v" style="color:var(--fuga)">${fug}</span></div>
+    <div class="st"><span class="lbl">Descarte</span><span class="v">${p.descarte}</span></div></div>
+   <div class="line" style="border-color:var(--killer);background:var(--killer-bg)">${ic("mask")}<div class="grow"><b>${esc(k?.nome||"Sem monstro")}</b><span>${S.mesa.killer?"com "+esc(nick(S.mesa.killer)):"ninguém no assento"}</span></div><div style="text-align:right"><b class="num" style="font-size:22px">${p.killer}</b><span class="tiny muted"> dados</span><br><span class="tiny muted">${k?.ph??0} PH</span></div></div></section>`;
+  if(!list.length) h+=`<section class="card"><p class="small muted">Nenhuma ficha criada ainda. Mande o código <b class="num">${esc(S.code)}</b> para a galera.</p></section>`;
+  h+=list.map(([u,s])=>{
+    const dead=s.status==="morto",e=escapou(s),mat=enc&&!dead&&!e&&s.pilha<p.killer;
+    const marcs=Object.entries(s.marc||{}).filter(([x,v])=>v>0);
+    return `<button class="card" data-act="editSob" data-u="${u}" style="text-align:left;width:100%;${dead?"opacity:.55;":""}${mat?"border-color:var(--blood);":""}${e?"border-color:var(--fuga);":""}">
+     <div class="who" style="width:100%"><div style="min-width:0"><h3 class="${dead?"dead-name":""}">${esc(s.nome)}</h3><span class="tiny muted">${esc(s.arq)} · ${esc(s.apelido||nick(u))}${enc?` · ${ARQ[s.arq].ini}º`:""}</span></div>
+      ${dead?`<span class="pill dead">${ic("skull")} Morta</span>`:e?`<span class="pill f">Fugiu</span>`:mat?`<span class="pill r">Matável</span>`:`<span class="pill">Viva</span>`}</div>
+     <div class="row between" style="width:100%">${diceRow(s.pilha,6,"")}<b class="num">${s.pilha}</b></div>
+     ${enc&&!dead?`<div style="width:100%"><div class="row between"><span class="lbl" style="color:#9fdbe6">Fuga</span><span class="num tiny">${s.fuga||0}/${fugaAlvo()}</span></div>${bar(s.fuga||0,fugaAlvo(),"fu")}</div>`:""}
+     <div class="stats" style="width:100%">
+      <div class="st pt"><span class="lbl">PT</span><span class="v" style="font-size:22px">${s.pt}</span>${bar(s.pt,10,"pt")}</div>
+      <div class="st fe"><span class="lbl">Ferida</span><span class="v" style="font-size:22px">${s.ferida}</span>${bar(s.ferida,6,"fe")}</div>
+      <div class="st se"><span class="lbl">Sequela</span><span class="v" style="font-size:22px">${s.sequela}</span>${bar(s.sequela,5,"se")}</div></div>
+     ${(marcs.length||(s.incap||[]).length||s.recursos)?`<div class="row">${marcs.map(([x,v])=>`<span class="pill w">${MARC_N[x]} ${v}</span>`).join("")}${(s.incap||[]).map(x=>`<span class="pill dead">${x} travado</span>`).join("")}${s.recursos?`<span class="pill">${s.recursos} recurso(s)</span>`:""}</div>`:""}
+    </button>`}).join("");
+  if(sem.size) h+=`<p class="tiny muted">Ainda criando ficha: ${[...sem].map(u=>esc(nick(u))).join(", ")}</p>`;
   return h;
 }
 
@@ -836,11 +875,30 @@ function sheetBody(o){
     return `<div class="row between"><h2>${NOMES[o.tipo]}</h2><button class="btn ghost sm" data-act="closeSheet">Fechar</button></div>
      <div class="target"><span class="n">${dif.d}+</span><div><b>${dif.cx?"Teste Complexo":"Teste Comum"}</b><br><span class="tiny muted">${dif.cx?"Precisa de 2 sucessos ou um 6":"Precisa de 1 sucesso"}${dif.notes.length?" · "+dif.notes.join(" · "):""}</span></div></div>
      <span class="lbl">Quantos dados arriscar? Toque para escolher</span><div class="dice">${picks}</div>
+     <button class="tog ${o.fis?"on":""}" data-act="rs" data-k="fis" data-v="${o.fis?"":"1"}"><span>Rolei dados físicos na mesa</span><span class="sw"></span></button>
+     ${o.fis?`<div class="line"><div class="grow"><b>Quantos deram ${dif.d} ou mais?</b><span>Sucessos, contando os 6</span></div><div class="step"><button data-act="rs" data-k="fs" data-v="${Math.max(0,(o.fs||0)-1)}" aria-label="menos">−</button><b>${Math.min(o.fs||0,o.n)}</b><button data-act="rs" data-k="fs" data-v="${Math.min(o.n,(o.fs||0)+1)}" aria-label="mais">+</button></div></div>
+     <div class="line"><div class="grow"><b>Quantos deram 6?</b></div><div class="step"><button data-act="rs" data-k="f6" data-v="${Math.max(0,(o.f6||0)-1)}" aria-label="menos">−</button><b>${Math.min(o.f6||0,o.fs||0)}</b><button data-act="rs" data-k="f6" data-v="${Math.min(o.fs||0,(o.f6||0)+1)}" aria-label="mais">+</button></div></div>`:""}
      ${o.tipo==="ajudar"?`<label class="lbl" for="alvoA">Ajudar quem</label><select id="alvoA" data-act-change="rsAlvo">${outros.map(([u,x])=>`<option value="${u}" ${o.alvo===u?"selected":""}>${esc(x.nome)} (${x.pilha} dados)</option>`).join("")}</select>`:""}
      <span class="lbl">Estilo da ação</span><div class="chips">${ordem.map(e=>`<button class="chip ${o.estilo===e?"on":""} ${A.est.includes(e)?"own":""}" data-act="rs" data-k="estilo" data-v="${o.estilo===e?"":e}">${e}${A.est.includes(e)?" −1":""}</button>`).join("")}</div>
      ${o.tipo==="teste"?`<button class="tog ${o.cx?"on":""}" data-act="rs" data-k="cx" data-v="${o.cx?"":"1"}"><span>Teste Complexo</span><span class="sw"></span></button>`:""}
      <button class="tog ${o.rec?"on":""}" data-act="rs" data-k="rec" data-v="${o.rec?"":"1"}" ${(s.recursos||0)<1?"disabled":""}><span>Usar um Recurso (−1) · tem ${s.recursos||0}</span><span class="sw"></span></button>
-     <button class="btn primary xl block" data-act="doRoll" ${(o.tipo==="ajudar"&&!outros.length)||s.pilha<1?"disabled":""}>${ic("dice")} Rolar ${o.n}</button>`;
+     <button class="btn primary xl block" data-act="doRoll" ${(o.tipo==="ajudar"&&!outros.length)||s.pilha<1?"disabled":""}>${ic("dice")} ${o.fis?"Aplicar resultado":"Rolar "+o.n}</button>`;
+  }
+  if(o.kind==="meu"){
+    const p=pools(); const enc=modo()==="encontro";
+    const stp=(f,lab,max,sub)=>`<div class="line"><div class="grow"><b>${lab}</b>${sub?`<span>${sub}</span>`:""}</div><div class="step"><button data-act="sobStep" data-f="${f}" data-d="-1" data-max="${max}" aria-label="menos ${lab}">−</button><b>${s[f]||0}</b><button data-act="sobStep" data-f="${f}" data-d="1" data-max="${max}" aria-label="mais ${lab}">+</button></div></div>`;
+    return `<div class="row between"><h2>Meus números</h2><button class="btn primary sm" data-act="closeSheet">Pronto</button></div>
+     <span class="lbl">Dados · ${s.pilha}/6</span>${diceRow(s.pilha)}
+     <div class="acts">
+      <button class="act" data-act="meuDado" data-o="killer" ${s.pilha<1?"disabled":""}>${ic("mask")}<b>−1 para o Killer</b><span>Perdi fora do Encontro</span></button>
+      <button class="act" data-act="meuDado" data-o="descarte" ${s.pilha<1?"disabled":""}>${ic("skull")}<b>−1 para o Descarte</b><span>Perdi no Encontro ou Susto</span></button>
+      <button class="act" data-act="meuDado" data-o="recupera" ${s.pilha>=6||p.descarte<1?"disabled":""}>${ic("wind")}<b>+1 do Descarte</b><span>${p.descarte} no Descarte</span></button>
+      <button class="act" data-act="meuDado" data-o="ganha" ${s.pilha>=6?"disabled":""}>${ic("plus")}<b>+1 dado</b><span>O Mestre me deu</span></button>
+      ${enc?`<button class="act" data-act="meuDado" data-o="fuga" ${s.pilha<1?"disabled":""}>${ic("run")}<b>Mover para a Fuga</b><span>Fuga ${s.fuga||0}/${fugaAlvo()}</span></button>
+      <button class="act" data-act="meuDado" data-o="volta" ${!(s.fuga>0)?"disabled":""}>${ic("dice")}<b>Voltar da Fuga</b><span>Para sua pilha</span></button>`:""}
+     </div>
+     <div class="list">${stp("pt","Tensão (PT)",10)}${stp("ferida","Ferida",6,"Chegou a 6, morreu")}${stp("sequela","Sequela",5)}${stp("recursos","Recursos",9)}</div>
+     <p class="tiny muted">Os botões de dados movem o dado para a pilha certa, então o Killer e o Descarte ficam sempre em dia.</p>`;
   }
   if(o.kind==="susto"){
     const r=o.res; if(!r) return "";
@@ -934,11 +992,22 @@ const ACT={
  scrim:(d,e)=>{if(e.target.classList.contains("scrim"))closeSheet()},
  draftArq:d=>{S.draft.arq=d.a;S.draftArqChanged=true;render()},
  novaSob:()=>{S.draft.criando=true;render()},
- sobStep:async d=>{const s=me();await upd(P.sob(S.code,S.uid),{[d.f]:clamp((s[d.f]||0)+ +d.d,0,9)})},
+ sobStep:async d=>{const s=me();const v=clamp((s[d.f]||0)+ +d.d,0,+(d.max||9));const pt={[d.f]:v};if(d.f==="ferida"&&v>=6&&s.status!=="morto"){pt.status="morto";log(`☠ ${s.nome} sangrou até a morte.`,"d")}if(d.f==="ferida")pt.ferida=Math.max(v,0);await upd(P.sob(S.code,S.uid),pt)},
  rolar:d=>{const s=me();const pre={teste:"",vazar:"Ligeiro",partir:"Potente",distrair:"Desenrolado",ajudar:""}[d.tipo];
    const outros=vivos().filter(([u])=>u!==S.uid);
    openSheet({kind:"roll",tipo:d.tipo,estilo:pre,cx:false,rec:false,n:Math.min(s.pilha,d.tipo==="teste"?2:Math.max(1,s.pilha)),alvo:outros[0]?.[0]})},
- rs:d=>{const o=S.sheet;o[d.k]=d.k==="n"?+d.v:(d.k==="estilo"?d.v:!!d.v);renderSheet()},
+ rs:d=>{const o=S.sheet;o[d.k]=["n","fs","f6"].includes(d.k)?+d.v:(d.k==="estilo"?d.v:!!d.v);if(d.k==="n"){o.fs=Math.min(o.fs||0,o.n);o.f6=Math.min(o.f6||0,o.fs)}if(d.k==="fs")o.f6=Math.min(o.f6||0,o.fs);renderSheet()},
+ meu:()=>openSheet({kind:"meu"}),
+ meuDado:async d=>{const s=me(),p=pools();const pt={};
+   if(d.o==="killer"){pt.pilha=s.pilha-1;pt.sac=(s.sac||0)+1}
+   if(d.o==="descarte"){pt.pilha=s.pilha-1;pt.desc=(s.desc||0)+1}
+   if(d.o==="recupera"){if(p.descarte<1)return toast("O Descarte está vazio.");pt.pilha=s.pilha+1;pt.rec=(s.rec||0)+1}
+   if(d.o==="ganha"){pt.pilha=s.pilha+1}
+   if(d.o==="fuga"){pt.pilha=s.pilha-1;pt.fuga=(s.fuga||0)+1;if(pt.fuga>=fugaAlvo()){pt.escEnc=encId();log(`🏃 ${s.nome} escapou do Encontro!`)}}
+   if(d.o==="volta"){pt.pilha=s.pilha+1;pt.fuga=s.fuga-1}
+   await upd(P.sob(S.code,S.uid),pt);
+   const txt={killer:"perdeu 1 dado para o Killer",descarte:"descartou 1 dado",recupera:"recuperou 1 dado do Descarte",ganha:"ganhou 1 dado",fuga:"moveu 1 dado para a Fuga",volta:"tirou 1 dado da Fuga"}[d.o];
+   log(`${s.nome} ${txt} (ajuste manual).`)},
  doRoll:()=>doRoll(),
  folego:async()=>{const s=me();if(pools().descarte<1)return toast("O Descarte está vazio.");if(s.pilha>=6)return toast("Sua pilha já está cheia.");await upd(P.sob(S.code,S.uid),{pilha:s.pilha+1,rec:(s.rec||0)+1});log(`${s.nome} recuperou o fôlego (+1 dado do Descarte).`)},
  arriscar:()=>openSheet({kind:"arriscar",alvo:S.uid}),
@@ -1025,7 +1094,8 @@ document.addEventListener("submit",async e=>{
 /* ============ LÓGICA DE JOGO ============ */
 async function doRoll(){
   const o=S.sheet,s=me(); const n=Math.min(o.n,s.pilha); if(n<1)return;
-  const {d,cx}=calcDif(o); const dice=roll(n);
+  const {d,cx}=calcDif(o); let dice=roll(n);
+  if(o.fis){const fs=Math.min(o.fs||0,n),f6=Math.min(o.f6||0,fs);dice=[...Array(f6).fill(6),...Array(fs-f6).fill(Math.min(5,d)),...Array(n-fs).fill(Math.max(1,d-1))];}
   let succ=dice.filter(v=>v>=d).length; const sixes=dice.filter(v=>v===6).length;
   const msgs=[]; const patch={}; const enc=modo()==="encontro";
   if(o.tipo==="partir"&&s.flags?.aquecer){succ++;patch.flags={...s.flags,aquecer:false};msgs.push("Aquecer: +1 sucesso garantido.")}
