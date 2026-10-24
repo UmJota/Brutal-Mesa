@@ -649,11 +649,9 @@ function viewFicha(){
     const A=ARQ[s.arq];
     h+=`<section class="card"><div class="row between"><span class="lbl">Seus pontos de tensão</span><b class="num" style="color:var(--pt);font-size:20px">${s.pt} PT</b></div>
      ${enc?`<p class="note">Vantagens ficam travadas durante o Encontro.</p>`:""}<div class="list">`;
-    for(const id of ["choque","tomar","tratar",...A.van]){
-      const v=VANT[id]; const cost=id==="choque"&&s.hab?.startsWith("Tensão Aliviada")?5:v.c;
-      const bloq=v.e&&(s.incap||[]).includes(v.e); const off=enc||bloq||(cost&&s.pt<cost)||dead;
-      h+=`<button class="line" data-act="vant" data-v="${id}" ${off?"disabled":""} style="text-align:left;${off?"opacity:.45":""}"><div class="grow"><b>${v.n}</b><span>${v.d}</span></div><span class="cost">${cost?cost+" PT":"varia"}</span></button>`;
-    }
+    const vi=vantInfo(s);
+    h+=`<span class="lbl" style="color:#ffb3bf">Do seu estilo · ${A.est.join(" + ")}</span>${vi.estilo.map(x=>vantRow(x,s,true,enc)).join("")}
+     <span class="lbl" style="margin-top:6px">Gerais · todo mundo pode</span>${vi.gerais.map(x=>vantRow(x,s,true,enc)).join("")}`;
     h+=`</div></section>`;
     const ses=S.mesa.sessao||1;
     h+=`<section class="card"><span class="lbl">Apegos · ganhe PT ao usar na história</span><div class="list">
@@ -668,6 +666,20 @@ function viewFicha(){
     <button class="btn ghost" data-act="novaSob">Criar outra Sobrevivente</button>`;
   }
   return h+`</div>`;
+}
+function vantInfo(s){
+  const A=ARQ[s.arq]; const inc=s.incap||[];
+  const mk=id=>{const v=VANT[id];const cost=id==="choque"&&s.hab?.startsWith("Tensão Aliviada")?5:v.c;const bloq=!!(v.e&&inc.includes(v.e));return {id,v,cost,bloq,falta:cost&&s.pt<cost?cost-s.pt:0}};
+  return {estilo:A.van.map(mk),gerais:["choque","tomar","tratar"].map(mk)};
+}
+function vantRow(x,s,interactive,enc){
+  const {id,v,cost,bloq,falta}=x; const dead=s.status==="morto";
+  const off=enc||bloq||falta>0||dead;
+  const st=bloq?`<span class="pill dead">${v.e} travado</span>`:falta?`<span class="tiny" style="color:var(--muted)">faltam ${falta} PT</span>`:`<span class="tiny" style="color:var(--ok)">pode usar</span>`;
+  const tag=v.e?`<span class="pill r" style="font-size:11px;padding:2px 8px">${v.e}</span>`:"";
+  const inner=`<div class="grow"><div class="row" style="gap:6px"><b>${v.n}</b>${tag}</div><span>${v.d}</span><div style="margin-top:4px">${st}</div></div><span class="cost">${cost?cost+" PT":"varia"}</span>`;
+  const sty=`text-align:left;${v.e&&!off?"border-color:var(--blood);background:var(--blood-bg);":""}${off?"opacity:.5;":""}`;
+  return interactive?`<button class="line" data-act="vant" data-v="${id}" ${off?"disabled":""} style="${sty}">${inner}</button>`:`<div class="line" style="${sty}">${inner}</div>`;
 }
 function apego(k,n,txt,g,usado){return `<button class="line" data-act="apego" data-k="${k}" ${usado?"disabled":""} style="text-align:left;${usado?"opacity:.45":""}"><div class="grow"><b>${n}</b><span>${esc(txt||"—")}${usado?" · já usado":""}</span></div><span class="cost">+${g}</span></button>`}
 
@@ -957,7 +969,14 @@ function sheetBody(o){
   if(o.kind==="editSob"){
     const x=S.sobrev[o.u]; if(!x) return `<button class="btn block" data-act="closeSheet">Fechar</button>`;
     const st=(f,lab,max)=>`<div class="line"><div class="grow"><b>${lab}</b></div><div class="step"><button data-act="mStep" data-u="${o.u}" data-f="${f}" data-d="-1" data-max="${max}" aria-label="menos">−</button><b>${f.includes(".")?(x.marc?.[f.split(".")[1]]||0):(x[f]||0)}</b><button data-act="mStep" data-u="${o.u}" data-f="${f}" data-d="1" data-max="${max}" aria-label="mais">+</button></div></div>`;
-    return `<div class="row between"><h2>${esc(x.nome)}</h2><button class="btn primary sm" data-act="closeSheet">Pronto</button></div>
+    const Ax=ARQ[x.arq]; const vx=vantInfo(x); const hb=Ax.hab.find(h=>h[0]===x.hab);
+    return `<div class="row between"><div style="min-width:0"><h2>${esc(x.nome)}</h2><span class="tiny muted">${esc(x.arq)} · ${esc(x.apelido||nick(o.u))} · ${x.pt} PT</span></div><button class="btn primary sm" data-act="closeSheet">Pronto</button></div>
+     <span class="lbl">Estilos (−1 de Dificuldade)</span><div class="chips">${Ax.est.map(e=>`<span class="chip ${(x.incap||[]).includes(e)?"":"on"}" style="${(x.incap||[]).includes(e)?"text-decoration:line-through;opacity:.6":""}">${e}</span>`).join("")}</div>
+     ${hb?`<div class="note"><b style="color:var(--bone)">${esc(hb[0])}</b> · ${esc(hb[2])}</div>`:""}
+     <details open><summary>Vantagens que pode usar</summary><div class="in list">
+      <span class="lbl" style="color:#ffb3bf">Do estilo</span>${vx.estilo.map(v=>vantRow(v,x,false,false)).join("")}
+      <span class="lbl">Gerais</span>${vx.gerais.map(v=>vantRow(v,x,false,false)).join("")}</div></details>
+     <span class="lbl">Ajustar</span>
      <div class="list">${st("pilha","Dados",6)}${st("pt","PT",10)}${st("ferida","Ferida",6)}${st("sequela","Sequela",5)}${modo()==="encontro"?st("fuga","Fuga",9):""}${st("recursos","Recursos",9)}</div>
      <details><summary>Marcadores e Estilos</summary><div class="in"><div class="list">${Object.keys(MARC_N).map(k=>st("marc."+k,MARC_N[k],6)).join("")}</div>
       <span class="lbl">Estilos travados</span><div class="chips">${ESTILOS.map(e=>`<button class="chip ${(x.incap||[]).includes(e)?"on":""}" data-act="mIncap" data-u="${o.u}" data-e="${e}">${e}</button>`).join("")}</div></div></details>
